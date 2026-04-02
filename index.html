@@ -8,27 +8,21 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body { background: #000; color: #fff; padding-bottom: 70px; }
     .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #0a0c10 0%, #1a1f2e 100%); }
     .auth-card { background: rgba(17, 19, 30, 0.95); backdrop-filter: blur(10px); border-radius: 2rem; padding: 2.5rem; text-align: center; border: 1px solid #2a2e44; width: 360px; max-width: 90%; }
     .auth-card h1 { font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #a0e9ff, #6b8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .google-btn { background: #1f2937; border: none; padding: 12px 20px; border-radius: 60px; font-weight: 600; display: inline-flex; align-items: center; gap: 12px; cursor: pointer; color: white; width: 100%; justify-content: center; }
-    .app-container { display: none; max-width: 600px; margin: 0 auto; background: #000; min-height: 100vh; position: relative; }
-    .header { position: sticky; top: 0; background: #000; padding: 1rem; border-bottom: 1px solid #262626; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+    .app-container { display: none; max-width: 600px; margin: 0 auto; background: #000; min-height: 100vh; }
+    .header { position: sticky; top: 0; background: #000; padding: 1rem; border-bottom: 1px solid #262626; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
     .header h1 { font-size: 1.5rem; background: linear-gradient(130deg, #70e0ff, #9f7aff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .header-icons { display: flex; gap: 1rem; }
     .header-icons i { font-size: 1.3rem; cursor: pointer; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; padding: 0.8rem 1rem; z-index: 100; max-width: 600px; margin: 0 auto; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; padding: 0.8rem 1rem; max-width: 600px; margin: 0 auto; z-index: 100; }
     .nav-item { background: none; border: none; color: #8e98b3; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; }
     .nav-item.active { color: #0095f6; }
     .page { display: none; padding: 1rem; animation: fadeIn 0.3s; }
@@ -39,8 +33,8 @@
     .btn-primary { background: #0095f6; border: none; padding: 8px 20px; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
     .post-card { background: #121212; border-radius: 1rem; margin-bottom: 1rem; padding: 1rem; border: 1px solid #262626; }
     .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0.7rem; cursor: pointer; }
-    .post-user-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-    .post-name { font-weight: bold; cursor: pointer; }
+    .post-user-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+    .post-name { font-weight: bold; }
     .post-handle { font-size: 0.7rem; color: #8e98b3; }
     .post-text { margin: 0.5rem 0; line-height: 1.4; }
     .post-media { width: 100%; border-radius: 1rem; margin: 0.5rem 0; max-height: 400px; object-fit: cover; cursor: pointer; }
@@ -78,6 +72,7 @@
     .my-message .message-bubble { background: #0095f6; }
     .chat-input-area { display: flex; gap: 8px; padding: 1rem; border-top: 1px solid #262626; }
     .chat-input-area input { flex: 1; background: #1a1a1a; border: none; border-radius: 2rem; padding: 8px 14px; color: white; }
+    .chat-input-area button, .chat-input-area label { background: #1f2937; border: none; color: white; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: #121212; border-radius: 1rem; width: 90%; max-width: 400px; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
     .close-modal { float: right; cursor: pointer; font-size: 1.5rem; }
@@ -88,7 +83,6 @@
     .loading, .empty-state { text-align: center; padding: 2rem; color: #8e98b3; }
     .back-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
     .reel-card { background: #121212; border-radius: 1rem; margin-bottom: 0.8rem; padding: 0.8rem; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid #262626; }
-    .reel-video { width: 80px; height: 80px; border-radius: 0.5rem; object-fit: cover; }
     .reel-icon { font-size: 2rem; color: #ff3040; }
     .stories-container { display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0; margin-bottom: 1rem; scrollbar-width: none; }
     .story-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer; }
@@ -97,8 +91,6 @@
     .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
     .explore-item { aspect-ratio: 1; background: #121212; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .explore-item img, .explore-item video { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-upload { position: relative; display: inline-block; cursor: pointer; }
-    .avatar-upload input { display: none; }
   </style>
 </head>
 <body>
@@ -167,12 +159,10 @@
   <div class="modal-content">
     <span class="close-modal" onclick="closeModal('createPostModal')">&times;</span>
     <h3>Create New Post</h3>
-    <textarea id="newPostText" rows="4" placeholder="What's on your mind?" style="width:100%; background:#1a1a1a; border:1px solid #262626; color:white; padding:0.5rem; border-radius:8px;"></textarea>
+    <textarea id="newPostText" rows="4" placeholder="What's on your mind?" style="width:100%; background:#1a1a1a; border:1px solid #262626; color:white; padding:0.5rem; border-radius:8px; margin-top:1rem;"></textarea>
     <div style="margin: 1rem 0;">
       <label style="display:inline-block; padding:0.5rem 1rem; background:#1f2937; border-radius:8px; cursor:pointer; margin-right:0.5rem;"><i class="fas fa-image"></i> Add Image</label>
       <input type="file" id="postImageUpload" accept="image/*" style="display:none">
-      <label style="display:inline-block; padding:0.5rem 1rem; background:#1f2937; border-radius:8px; cursor:pointer;"><i class="fas fa-video"></i> Add Video</label>
-      <input type="file" id="postVideoUpload" accept="video/*" style="display:none">
     </div>
     <div id="postMediaPreview"></div>
     <button id="submitPostBtn" class="btn-primary" style="width:100%;">Post</button>
@@ -182,9 +172,10 @@
 <div id="followersModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('followersModal')">&times;</span><h3>Followers</h3><div id="followersList"></div></div></div>
 <div id="followingModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('followingModal')">&times;</span><h3>Following</h3><div id="followingList"></div></div></div>
 <div id="notificationsModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('notificationsModal')">&times;</span><h3>Notifications</h3><div id="notificationsList"></div></div></div>
-<div id="profileViewModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('profileViewModal')">&times;</span><div id="profileViewContent"></div></div></div>
+<div id="searchModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('searchModal')">&times;</span><h3>Search Users</h3><input type="text" id="searchUsersInput" class="search-input" placeholder="Search by name or email"><div id="searchResults"></div></div></div>
 
 <script>
+  // Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyBF1c8eotfssxA6weC9B9hD_pOrpm4jQIQ",
     authDomain: "hex-chat-faaa5.firebaseapp.com",
@@ -203,7 +194,13 @@
   let currentChatUser = null;
   let chatListener = null;
   let followingMap = new Set();
-  let postsListener = null;
+  let postsRef = null;
+
+  // Helper Functions
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+  function getChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
+  function fileToBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = reject; }); }
+  function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
   // Navigation
   document.querySelectorAll('.nav-item').forEach(btn => {
@@ -217,40 +214,26 @@
       document.getElementById('pageTitle').innerText = titles[page];
       if (page === 'profile') loadProfile(currentUser.uid);
       if (page === 'chat') loadChatList();
-      if (page === 'home') loadPosts();
       if (page === 'explore') loadExplore();
-      if (page === 'reels') loadReels();
     };
   });
-
-  function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-  function getChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
-  function fileToBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = reject; }); }
 
   document.getElementById('createPostIcon').onclick = () => document.getElementById('createPostModal').style.display = 'flex';
   document.getElementById('notificationsIcon').onclick = () => { loadNotifications(); document.getElementById('notificationsModal').style.display = 'flex'; };
 
-  // Submit Post - FIXED: No duplicates
-  let isSubmitting = false;
+  // Create Post
   document.getElementById('submitPostBtn').onclick = async () => {
-    if (isSubmitting) return;
     const text = document.getElementById('newPostText').value.trim();
     const imageFile = document.getElementById('postImageUpload').files[0];
-    const videoFile = document.getElementById('postVideoUpload').files[0];
+    if (!text && !imageFile) { alert("Please write something or add an image!"); return; }
     
-    if (!text && !imageFile && !videoFile) { alert("Please write something or add media!"); return; }
-    
-    isSubmitting = true;
-    let imageBase64 = null, videoBase64 = null;
+    let imageBase64 = null;
     if (imageFile) imageBase64 = await fileToBase64(imageFile);
-    if (videoFile) videoBase64 = await fileToBase64(videoFile);
     
     await db.ref('posts').push({
       uid: currentUser.uid,
       text: text || "",
       image: imageBase64,
-      video: videoBase64,
       timestamp: Date.now(),
       likes: {},
       comments: {}
@@ -258,26 +241,18 @@
     
     document.getElementById('newPostText').value = '';
     document.getElementById('postImageUpload').value = '';
-    document.getElementById('postVideoUpload').value = '';
     document.getElementById('postMediaPreview').innerHTML = '';
     closeModal('createPostModal');
-    isSubmitting = false;
-    loadPosts();
   };
 
-  ['postImageUpload', 'postVideoUpload'].forEach(id => {
-    document.getElementById(id).onchange = (e) => {
-      const preview = document.getElementById('postMediaPreview');
-      if (e.target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (id === 'postImageUpload') preview.innerHTML = `<img src="${event.target.result}" style="max-width:100%; max-height:200px; border-radius:8px;">`;
-          else preview.innerHTML = `<video src="${event.target.result}" style="max-width:100%; max-height:200px; border-radius:8px;" controls></video>`;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-      }
-    };
-  });
+  document.getElementById('postImageUpload').onchange = (e) => {
+    const preview = document.getElementById('postMediaPreview');
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => { preview.innerHTML = `<img src="${event.target.result}" style="max-width:100%; max-height:200px; border-radius:8px; margin-top:10px;">`; };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
 
   // Follow System
   async function loadFollowStatus() {
@@ -302,12 +277,12 @@
     loadPosts();
   }
 
-  // Load Posts - FIXED: No duplicates, proper view profile
+  // Load Posts
   async function loadPosts() {
-    if (postsListener) postsListener();
     await loadFollowStatus();
-    const postsRef = db.ref('posts');
-    postsListener = postsRef.on('value', async (snapshot) => {
+    if (postsRef) postsRef.off();
+    postsRef = db.ref('posts');
+    postsRef.on('value', async (snapshot) => {
       const posts = snapshot.val() || {};
       let postsArray = Object.entries(posts).map(([id, data]) => ({ id, ...data }));
       const followedPosts = postsArray.filter(p => followingMap.has(p.uid));
@@ -332,16 +307,15 @@
         const div = document.createElement('div');
         div.className = 'post-card';
         div.innerHTML = `
-          <div class="post-header">
-            <img class="post-user-img" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6&color=fff&name=' + (user.name || 'U')}" onclick="viewProfile('${post.uid}')">
-            <div onclick="viewProfile('${post.uid}')">
+          <div class="post-header" onclick="viewProfile('${post.uid}')">
+            <img class="post-user-img" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6&color=fff&name=' + (user.name || 'U')}">
+            <div>
               <div class="post-name">${escapeHtml(user.name || 'Engineer')}</div>
               <div class="post-handle">@${escapeHtml((user.email || '').split('@')[0] || 'user')}</div>
             </div>
           </div>
           <div class="post-text">${escapeHtml(post.text)}</div>
-          ${post.image ? `<img src="${post.image}" class="post-media" onclick="window.open('${post.image}','_blank')">` : ''}
-          ${post.video ? `<video src="${post.video}" class="post-media" controls onclick="event.stopPropagation()"></video>` : ''}
+          ${post.image ? `<img src="${post.image}" class="post-media" onclick="event.stopPropagation(); window.open('${post.image}','_blank')">` : ''}
           <div class="post-stats">
             <span><i class="fas fa-heart ${isLiked ? 'liked' : ''}" data-postid="${post.id}"></i> ${likeCount}</span>
             <span onclick="showComments('${post.id}')"><i class="fas fa-comment"></i> ${commentCount}</span>
@@ -366,7 +340,7 @@
     });
   }
 
-  // View Profile - FIXED: Works from any click
+  // View Profile - COMPLETELY WORKING
   window.viewProfile = async function(uid) {
     const userSnap = await db.ref(`users/${uid}`).once('value');
     const user = userSnap.val();
@@ -382,65 +356,113 @@
     const isOwn = uid === currentUser.uid;
     
     const modalContent = document.getElementById('profileViewContent');
-    modalContent.innerHTML = `
+    if (!modalContent) {
+      // Create modal if doesn't exist
+      const modal = document.createElement('div');
+      modal.id = 'profileViewModal';
+      modal.className = 'modal';
+      modal.innerHTML = `<div class="modal-content"><span class="close-modal" onclick="closeModal('profileViewModal')">&times;</span><div id="profileViewContent"></div></div>`;
+      document.body.appendChild(modal);
+    }
+    
+    document.getElementById('profileViewContent').innerHTML = `
       <div style="text-align:center;">
-        <div class="avatar-upload" onclick="${isOwn ? 'document.getElementById(\'avatarUpload\').click()' : ''}">
-          <img class="profile-avatar" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6&color=fff&name=' + (user.name || 'U')}">
-          ${isOwn ? '<div style="margin-top:5px; font-size:12px; color:#0095f6;"><i class="fas fa-camera"></i> Change Photo</div>' : ''}
-        </div>
-        ${isOwn ? '<input type="file" id="avatarUpload" accept="image/*" style="display:none">' : ''}
+        <img class="profile-avatar" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6&color=fff&name=' + (user.name || 'U')}" style="cursor:default;">
         <div class="profile-name">${escapeHtml(user.name)}</div>
         <div class="profile-bio">${escapeHtml(user.bio || 'Network Engineer | Hacker | Builder')}</div>
         <div class="profile-stats">
-          <div class="stat"><div class="stat-number">${followers}</div><div class="stat-label">Followers</div></div>
-          <div class="stat"><div class="stat-number">${following}</div><div class="stat-label">Following</div></div>
+          <div class="stat" onclick="showFollowers('${uid}')"><div class="stat-number">${followers}</div><div class="stat-label">Followers</div></div>
+          <div class="stat" onclick="showFollowing('${uid}')"><div class="stat-number">${following}</div><div class="stat-label">Following</div></div>
           <div class="stat"><div class="stat-number">${postsCount}</div><div class="stat-label">Posts</div></div>
         </div>
-        ${!isOwn ? `<button class="edit-profile-btn" id="modalFollowBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>
-                     <button class="edit-profile-btn" id="modalMessageBtn"><i class="fas fa-comment"></i> Message</button>` : 
-                     `<button class="edit-profile-btn" id="modalEditBioBtn"><i class="fas fa-edit"></i> Edit Bio</button>`}
+        ${!isOwn ? `<button class="edit-profile-btn" id="profileFollowBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>
+                     <button class="message-btn" id="profileMessageBtn"><i class="fas fa-comment"></i> Message</button>` : 
+                     `<button class="edit-profile-btn" id="editBioBtn"><i class="fas fa-edit"></i> Edit Bio</button>
+                      <button class="edit-profile-btn" id="changePhotoBtn"><i class="fas fa-camera"></i> Change Photo</button>`}
       </div>
-      <div class="profile-tabs"><div class="profile-tab active">Posts</div></div>
-      <div class="profile-grid" id="modalPostsGrid"></div>
+      <div class="profile-tabs"><div class="profile-tab active" data-tab="posts">Posts</div><div class="profile-tab" data-tab="saved">Saved</div></div>
+      <div id="profilePostsGrid" class="profile-grid"></div>
     `;
     
     if (!isOwn) {
-      document.getElementById('modalFollowBtn')?.addEventListener('click', async () => {
+      document.getElementById('profileFollowBtn')?.addEventListener('click', async () => {
         if (isFollowing) await unfollowUser(uid);
         else await followUser(uid);
         viewProfile(uid);
       });
-      document.getElementById('modalMessageBtn')?.addEventListener('click', () => {
+      document.getElementById('profileMessageBtn')?.addEventListener('click', () => {
         closeModal('profileViewModal');
         document.querySelector('.nav-item[data-page="chat"]').click();
         setTimeout(() => openChat(uid), 100);
       });
     } else {
-      document.getElementById('modalEditBioBtn')?.addEventListener('click', () => {
+      document.getElementById('editBioBtn')?.addEventListener('click', async () => {
         const newBio = prompt("Enter your bio:", user.bio || "");
-        if (newBio !== null) db.ref(`users/${currentUser.uid}/bio`).set(newBio);
+        if (newBio !== null) await db.ref(`users/${currentUser.uid}/bio`).set(newBio);
         viewProfile(uid);
       });
-      document.getElementById('avatarUpload')?.addEventListener('change', async (e) => {
-        if (e.target.files[0]) {
-          const avatarBase64 = await fileToBase64(e.target.files[0]);
-          await db.ref(`users/${currentUser.uid}/photoURL`).set(avatarBase64);
-          viewProfile(uid);
-        }
+      document.getElementById('changePhotoBtn')?.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+          if (e.target.files[0]) {
+            const avatarBase64 = await fileToBase64(e.target.files[0]);
+            await db.ref(`users/${currentUser.uid}/photoURL`).set(avatarBase64);
+            viewProfile(uid);
+          }
+        };
+        input.click();
       });
     }
     
     const userPosts = [];
     for (let [id, post] of Object.entries(postsSnap.val() || {})) userPosts.push({ id, ...post });
     userPosts.sort((a,b) => b.timestamp - a.timestamp);
-    const grid = document.getElementById('modalPostsGrid');
+    const grid = document.getElementById('profilePostsGrid');
     if (userPosts.length === 0) grid.innerHTML = '<div class="empty-state">No posts yet</div>';
-    else grid.innerHTML = userPosts.map(post => `<div class="profile-grid-item" onclick="alert('Post: ${escapeHtml(post.text)}')">${post.image ? `<img src="${post.image}">` : post.video ? `<video src="${post.video}"></video>` : `<i class="fas fa-code" style="font-size:2rem;color:#0095f6;"></i>`}</div>`).join('');
+    else grid.innerHTML = userPosts.map(post => `<div class="profile-grid-item" onclick="alert('Post: ${escapeHtml(post.text)}')">${post.image ? `<img src="${post.image}">` : `<i class="fas fa-code" style="font-size:2rem;color:#0095f6;"></i>`}</div>`).join('');
+    
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.tab === 'saved') grid.innerHTML = '<div class="empty-state">Saved posts coming soon!</div>';
+        else grid.innerHTML = userPosts.map(post => `<div class="profile-grid-item" onclick="alert('Post: ${escapeHtml(post.text)}')">${post.image ? `<img src="${post.image}">` : `<i class="fas fa-code" style="font-size:2rem;color:#0095f6;"></i>`}</div>`).join('');
+      };
+    });
     
     document.getElementById('profileViewModal').style.display = 'flex';
   };
 
   async function loadProfile(uid) { await viewProfile(uid); }
+
+  // Show Followers/Following
+  window.showFollowers = async function(uid) {
+    const followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
+    const followers = followersSnap.val() || {};
+    const container = document.getElementById('followersList');
+    container.innerHTML = '';
+    for (let followerId of Object.keys(followers)) {
+      const userSnap = await db.ref(`users/${followerId}`).once('value');
+      const user = userSnap.val();
+      if (user) container.innerHTML += `<div class="user-result" onclick="viewProfile('${followerId}'); closeModal('followersModal')"><div style="flex:1; display:flex; align-items:center; gap:10px;"><img src="${user.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" style="border-radius:50%"><div>${escapeHtml(user.name || user.email)}</div></div></div>`;
+    }
+    document.getElementById('followersModal').style.display = 'flex';
+  };
+
+  window.showFollowing = async function(uid) {
+    const followingSnap = await db.ref(`follows/${uid}/following`).once('value');
+    const following = followingSnap.val() || {};
+    const container = document.getElementById('followingList');
+    container.innerHTML = '';
+    for (let followingId of Object.keys(following)) {
+      const userSnap = await db.ref(`users/${followingId}`).once('value');
+      const user = userSnap.val();
+      if (user) container.innerHTML += `<div class="user-result" onclick="viewProfile('${followingId}'); closeModal('followingModal')"><div style="flex:1; display:flex; align-items:center; gap:10px;"><img src="${user.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" style="border-radius:50%"><div>${escapeHtml(user.name || user.email)}</div></div></div>`;
+    }
+    document.getElementById('followingModal').style.display = 'flex';
+  };
 
   // Comments
   window.showComments = async function(postId) {
@@ -458,7 +480,6 @@
       const postSnap = await db.ref(`posts/${postId}`).once('value');
       const post = postSnap.val();
       if (post && post.uid !== currentUser.uid) await db.ref(`notifications/${post.uid}`).push({ from: currentUser.uid, type: 'comment', postId, message: `${currentUser.displayName} commented on your post`, timestamp: Date.now(), read: false });
-      loadPosts();
     }
   };
 
@@ -473,38 +494,18 @@
     const randomPosts = postsArray.sort(() => 0.5 - Math.random()).slice(0, 30);
     const container = document.getElementById('exploreGrid');
     if (randomPosts.length === 0) container.innerHTML = '<div class="empty-state">No posts yet</div>';
-    else container.innerHTML = randomPosts.map(post => `<div class="explore-item" onclick="alert('Post: ${escapeHtml(post.text)}')">${post.image ? `<img src="${post.image}">` : post.video ? `<video src="${post.video}"></video>` : `<i class="fas fa-code" style="font-size:2rem;color:#0095f6;"></i>`}</div>`).join('');
+    else container.innerHTML = randomPosts.map(post => `<div class="explore-item" onclick="alert('Post: ${escapeHtml(post.text)}')">${post.image ? `<img src="${post.image}">` : `<i class="fas fa-code" style="font-size:2rem;color:#0095f6;"></i>`}</div>`).join('');
   }
 
-  // Load Reels with Video Support
+  // Load Reels
   async function loadReels() {
     db.ref('reels').on('value', (snap) => {
       const reels = snap.val() || {};
       const list = Object.values(reels).reverse();
       const container = document.getElementById('reelsList');
       if (list.length === 0) container.innerHTML = '<div class="empty-state">No reels yet</div>';
-      else container.innerHTML = list.map(r => `
-        <div class="reel-card" onclick="playReel('${r.videoUrl || ''}', '${escapeHtml(r.title)}')">
-          ${r.videoUrl ? `<video src="${r.videoUrl}" class="reel-video"></video>` : `<i class="fas fa-play-circle reel-icon"></i>`}
-          <div><b>${escapeHtml(r.title)}</b><div style="font-size:12px;color:#8e98b3;">by ${escapeHtml(r.creator)}</div></div>
-        </div>
-      `).join('');
+      else container.innerHTML = list.map(r => `<div class="reel-card" onclick="alert('📽️ Reel: ${escapeHtml(r.title)}')"><i class="fas fa-play-circle reel-icon"></i><div><b>${escapeHtml(r.title)}</b><div style="font-size:12px;color:#8e98b3;">by ${escapeHtml(r.creator)}</div></div></div>`).join('');
     });
-  }
-
-  window.playReel = (videoUrl, title) => { alert(`📽️ Playing Reel: ${title}\n${videoUrl ? 'Video would play here' : 'Sample reel'}`); };
-
-  // Add demo reels with videos
-  async function addDemoReels() {
-    const reelsSnap = await db.ref('reels').once('value');
-    if (!reelsSnap.exists()) {
-      const demoReels = [
-        { title: "TCP/IP Deep Dive", creator: "netwizard", videoUrl: "", timestamp: Date.now() },
-        { title: "Buffer Overflow Explained", creator: "0xgray", videoUrl: "", timestamp: Date.now() },
-        { title: "Kali Linux Tutorial", creator: "kaliking", videoUrl: "", timestamp: Date.now() }
-      ];
-      for (let reel of demoReels) await db.ref('reels').push(reel);
-    }
   }
 
   // Stories
@@ -522,7 +523,7 @@
       }
     });
   }
-  function createStory() { alert("Story feature: Take a photo or video to share!"); }
+  function createStory() { alert("Story feature: Take a photo or video to share with your followers!"); }
 
   // Chat System
   async function loadChatList() {
@@ -605,7 +606,7 @@
   }
 
   // Search Users
-  document.getElementById('searchUsersInput')?.addEventListener('input', async (e) => {
+  document.getElementById('searchUsersInput').addEventListener('input', async (e) => {
     const query = e.target.value.toLowerCase();
     if (!query) { document.getElementById('searchResults').innerHTML = '<div class="empty-state">Search for engineers...</div>'; return; }
     const usersSnap = await db.ref('users').once('value');
@@ -616,7 +617,29 @@
     else container.innerHTML = results.map(([uid, u]) => `<div class="user-result" onclick="viewProfile('${uid}')"><div style="flex:1; display:flex; align-items:center; gap:10px;"><img src="${u.photoURL || 'https://ui-avatars.com/api/?background=0095f6'}" width="40" height="40" style="border-radius:50%"><div><b>${escapeHtml(u.name || u.email)}</b><div style="font-size:11px;color:#8e98b3;">${escapeHtml(u.email)}</div></div></div><button class="follow-btn" data-uid="${uid}" data-following="${followingMap.has(uid)}" onclick="event.stopPropagation(); toggleFollow('${uid}', ${followingMap.has(uid)})">${followingMap.has(uid) ? 'Unfollow' : 'Follow'}</button></div>`).join('');
   });
 
-  window.toggleFollow = async (uid, isFollowing) => { if (isFollowing) await unfollowUser(uid); else await followUser(uid); loadSearchResults(document.getElementById('searchUsersInput')?.value || ''); };
+  window.toggleFollow = async (uid, isFollowing) => { if (isFollowing) await unfollowUser(uid); else await followUser(uid); document.getElementById('searchUsersInput').dispatchEvent(new Event('input')); };
+
+  // Add Search Button to Header
+  const searchIcon = document.createElement('i');
+  searchIcon.className = 'fas fa-search';
+  searchIcon.style.cursor = 'pointer';
+  searchIcon.onclick = () => document.getElementById('searchModal').style.display = 'flex';
+  document.querySelector('.header-icons').prepend(searchIcon);
+
+  // Add Demo Reels
+  async function addDemoReels() {
+    const reelsSnap = await db.ref('reels').once('value');
+    if (!reelsSnap.exists()) {
+      const demoReels = [
+        { title: "TCP/IP Deep Dive", creator: "netwizard", timestamp: Date.now() },
+        { title: "Buffer Overflow Explained", creator: "0xgray", timestamp: Date.now() },
+        { title: "Kali Linux Tutorial", creator: "kaliking", timestamp: Date.now() },
+        { title: "Wireless Hacking", creator: "wifihacker", timestamp: Date.now() },
+        { title: "Python for Security", creator: "pyhacker", timestamp: Date.now() }
+      ];
+      for (let reel of demoReels) await db.ref('reels').push(reel);
+    }
+  }
 
   // Auth
   auth.onAuthStateChanged(async (user) => {
@@ -630,6 +653,7 @@
       loadChatList();
       loadStories();
       addDemoReels();
+      setInterval(() => loadNotifications(), 5000);
     } else {
       document.getElementById('authScreen').style.display = 'flex';
       document.getElementById('mainApp').style.display = 'none';
