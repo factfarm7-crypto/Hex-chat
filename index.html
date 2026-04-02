@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>HackerNet — Social for Engineers</title>
+  <title>HackerNet — Ultimate Engineer Social Platform</title>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -15,7 +15,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
@@ -24,7 +24,7 @@
       padding-bottom: 70px;
     }
 
-    /* Auth screen */
+    /* Auth Screen */
     .auth-container {
       position: fixed;
       top: 0; left: 0;
@@ -67,7 +67,11 @@
       margin-top: 1rem;
     }
 
-    /* Main app */
+    .google-btn:hover {
+      background: #374151;
+    }
+
+    /* Main App */
     .app-container {
       display: none;
       max-width: 600px;
@@ -97,6 +101,12 @@
       color: transparent;
     }
 
+    .header-icons i {
+      font-size: 1.4rem;
+      margin-left: 1rem;
+      cursor: pointer;
+    }
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -119,6 +129,7 @@
       color: #8e98b3;
       font-size: 1.5rem;
       cursor: pointer;
+      transition: 0.1s;
     }
 
     .nav-item.active {
@@ -136,11 +147,11 @@
     }
 
     @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Post card */
+    /* Post Card */
     .post-card {
       background: #121212;
       border-radius: 1rem;
@@ -157,6 +168,10 @@
       cursor: pointer;
     }
 
+    .post-header:hover {
+      background: #1a1a1a;
+    }
+
     .avatar-sm {
       width: 42px;
       height: 42px;
@@ -164,10 +179,25 @@
       object-fit: cover;
     }
 
+    .post-name {
+      font-weight: bold;
+    }
+
+    .post-handle {
+      font-size: 0.7rem;
+      color: #8e98b3;
+    }
+
+    .post-text {
+      padding: 0 12px 8px;
+      line-height: 1.4;
+    }
+
     .post-media {
       width: 100%;
       max-height: 400px;
       object-fit: cover;
+      cursor: pointer;
     }
 
     .post-stats {
@@ -181,6 +211,10 @@
     .post-stats i {
       margin-right: 5px;
       cursor: pointer;
+    }
+
+    .post-stats i:hover {
+      transform: scale(1.1);
     }
 
     .liked {
@@ -202,6 +236,16 @@
       cursor: pointer;
     }
 
+    .profile-name {
+      font-size: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .profile-bio {
+      color: #8e98b3;
+      margin-top: 0.5rem;
+    }
+
     .stats-row {
       display: flex;
       justify-content: space-around;
@@ -214,6 +258,16 @@
     .stat-item {
       text-align: center;
       cursor: pointer;
+    }
+
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: #8e98b3;
     }
 
     .grid-posts {
@@ -231,7 +285,7 @@
       cursor: pointer;
     }
 
-    .grid-item img {
+    .grid-item img, .grid-item video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -254,6 +308,7 @@
       justify-content: center;
       align-items: center;
       margin-bottom: 1rem;
+      position: relative;
     }
 
     .reel video {
@@ -262,7 +317,12 @@
       border-radius: 1rem;
     }
 
-    /* Modal for comments */
+    .reel-info {
+      padding: 0.5rem;
+      width: 100%;
+    }
+
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -289,7 +349,6 @@
       border-bottom: 1px solid #262626;
     }
 
-    /* Buttons */
     .btn-primary {
       background: #0095f6;
       border: none;
@@ -300,6 +359,23 @@
       cursor: pointer;
       width: 100%;
       margin-top: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      background: #0077cc;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #8e98b3;
+    }
+
+    .close-modal {
+      float: right;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #8e98b3;
     }
   </style>
 </head>
@@ -318,15 +394,18 @@
 <div id="mainApp" class="app-container">
   <div class="header">
     <h1 id="pageTitle">HackerNet</h1>
-    <div><i class="fas fa-plus-circle" id="openPostModal" style="font-size:1.4rem; margin-right:1rem;"></i><i class="fas fa-heart" id="notifIcon"></i></div>
+    <div class="header-icons">
+      <i class="fas fa-plus-circle" id="openPostModal"></i>
+      <i class="fas fa-video" id="openReelModal"></i>
+    </div>
   </div>
 
   <!-- PAGES -->
-  <div id="homePage" class="page active"><div id="feedContainer"></div></div>
+  <div id="homePage" class="page active"><div id="feedContainer"><div class="loading">Loading feed...</div></div></div>
   <div id="explorePage" class="page"><div id="exploreGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:2px;"></div></div>
-  <div id="reelsPage" class="page"><div id="reelsSwiper" class="reels-container"></div></div>
-  <div id="profilePage" class="page"><div id="profileContainer"></div></div>
-  <div id="chatPage" class="page"><div style="text-align:center; padding:2rem;">💬 Chat coming soon</div></div>
+  <div id="reelsPage" class="page"><div id="reelsSwiper" class="reels-container"><div class="loading">Loading reels...</div></div></div>
+  <div id="profilePage" class="page"><div id="profileContainer"><div class="loading">Loading profile...</div></div></div>
+  <div id="chatPage" class="page"><div style="text-align:center; padding:2rem;">💬 Chat feature coming soon</div></div>
 
   <div class="bottom-nav">
     <button class="nav-item active" data-page="home"><i class="fas fa-home"></i></button>
@@ -340,8 +419,8 @@
 <!-- POST MODAL -->
 <div id="postModal" class="modal">
   <div class="modal-content">
-    <span class="close-modal" style="float:right; font-size:1.5rem; cursor:pointer;" onclick="closeModal('postModal')">&times;</span>
-    <h3>Create post</h3>
+    <span class="close-modal" onclick="closeModal('postModal')">&times;</span>
+    <h3>Create Post</h3>
     <textarea id="postText" rows="3" placeholder="Share your engineering thought..." style="width:100%; background:#1a1a1a; border:1px solid #262626; border-radius:8px; padding:8px; color:white; margin:1rem 0;"></textarea>
     <label for="postImageFile" style="display:inline-block; background:#1f2937; padding:6px 12px; border-radius:20px; cursor:pointer;"><i class="fas fa-image"></i> Add image</label>
     <input type="file" id="postImageFile" accept="image/*" style="display:none">
@@ -350,10 +429,23 @@
   </div>
 </div>
 
+<!-- REEL MODAL -->
+<div id="reelModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal('reelModal')">&times;</span>
+    <h3>Upload Reel</h3>
+    <input type="text" id="reelTitle" placeholder="Title" style="width:100%; background:#1a1a1a; border:1px solid #262626; border-radius:8px; padding:8px; color:white; margin:1rem 0;">
+    <label for="reelVideoFile" style="display:inline-block; background:#1f2937; padding:6px 12px; border-radius:20px; cursor:pointer;"><i class="fas fa-video"></i> Select video (MP4)</label>
+    <input type="file" id="reelVideoFile" accept="video/mp4" style="display:none">
+    <div id="reelPreview"></div>
+    <button id="submitReelBtn" class="btn-primary">Upload Reel</button>
+  </div>
+</div>
+
 <!-- COMMENT MODAL -->
 <div id="commentModal" class="modal">
   <div class="modal-content">
-    <span class="close-modal" style="float:right; font-size:1.5rem; cursor:pointer;" onclick="closeModal('commentModal')">&times;</span>
+    <span class="close-modal" onclick="closeModal('commentModal')">&times;</span>
     <h3>Comments</h3>
     <div id="commentsList" style="max-height: 300px; overflow-y: auto; margin: 1rem 0;"></div>
     <textarea id="newCommentText" rows="2" placeholder="Write a comment..." style="width:100%; background:#1a1a1a; border:1px solid #262626; border-radius:8px; padding:8px; color:white;"></textarea>
@@ -362,7 +454,7 @@
 </div>
 
 <script>
-  // Firebase config
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyBF1c8eotfssxA6weC9B9hD_pOrpm4jQIQ",
     authDomain: "hex-chat-faaa5.firebaseapp.com",
@@ -372,275 +464,444 @@
     messagingSenderId: "900244800752",
     appId: "1:900244800752:web:31662e1d280b98a5f0ee35"
   };
+  
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
 
   let currentUser = null;
   let followingSet = new Set();
-  let currentCommentTarget = { type: 'post', id: null }; // for post or reel comments
+  let currentCommentId = null;
+  let currentCommentType = null;
 
-  // Helper
-  function escapeHtml(str) { return str?.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) || ''; }
-  function fileToBase64(file) { return new Promise(r => { let fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(file); }); }
-  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+  // Helper Functions
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  }
+  
+  function fileToBase64(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+  
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
 
-  // Load following status
+  // Load Following Status
   async function loadFollowing() {
-    let snap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
+    const snap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
     followingSet = new Set(Object.keys(snap.val() || {}));
   }
 
   // Follow / Unfollow
-  async function followUser(uid) { if(uid===currentUser.uid) return; await db.ref(`follows/${currentUser.uid}/following/${uid}`).set(true); await db.ref(`follows/${uid}/followers/${currentUser.uid}`).set(true); followingSet.add(uid); loadPosts(); }
-  async function unfollowUser(uid) { await db.ref(`follows/${currentUser.uid}/following/${uid}`).remove(); await db.ref(`follows/${uid}/followers/${currentUser.uid}`).remove(); followingSet.delete(uid); loadPosts(); }
+  async function followUser(uid) {
+    if (uid === currentUser.uid) return;
+    await db.ref(`follows/${currentUser.uid}/following/${uid}`).set(true);
+    await db.ref(`follows/${uid}/followers/${currentUser.uid}`).set(true);
+    followingSet.add(uid);
+    loadPosts();
+  }
+  
+  async function unfollowUser(uid) {
+    await db.ref(`follows/${currentUser.uid}/following/${uid}`).remove();
+    await db.ref(`follows/${uid}/followers/${currentUser.uid}`).remove();
+    followingSet.delete(uid);
+    loadPosts();
+  }
 
-  // POSTS FEED (followed + random)
+  // Load Posts Feed
   async function loadPosts() {
     await loadFollowing();
-    db.ref('posts').on('value', async (snap) => {
-      let posts = Object.entries(snap.val()||{}).map(([id,d])=>({id,...d}));
-      let followed = posts.filter(p => followingSet.has(p.uid) || p.uid===currentUser.uid);
-      let randomOthers = posts.filter(p => !followingSet.has(p.uid) && p.uid!==currentUser.uid).sort(()=>0.5-Math.random()).slice(0,8);
-      let all = [...followed, ...randomOthers].sort((a,b)=>b.timestamp - a.timestamp);
-      let container = document.getElementById('feedContainer');
+    db.ref('posts').on('value', async (snapshot) => {
+      const posts = snapshot.val() || {};
+      let postsArray = Object.entries(posts).map(([id, data]) => ({ id, ...data }));
+      
+      const followed = postsArray.filter(p => followingSet.has(p.uid) || p.uid === currentUser.uid);
+      const others = postsArray.filter(p => !followingSet.has(p.uid) && p.uid !== currentUser.uid).sort(() => 0.5 - Math.random()).slice(0, 8);
+      const all = [...followed, ...others].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      
+      const container = document.getElementById('feedContainer');
+      if (all.length === 0) {
+        container.innerHTML = '<div class="loading">No posts yet. Follow engineers or create one!</div>';
+        return;
+      }
+      
       container.innerHTML = '';
-      for(let p of all) {
-        let user = (await db.ref(`users/${p.uid}`).once('value')).val() || {name:'Ghost',photoURL:'',email:''};
-        let likes = p.likes ? Object.keys(p.likes).length : 0;
-        let liked = p.likes && p.likes[currentUser.uid];
-        let commentsCount = p.comments ? Object.keys(p.comments).length : 0;
-        let div = document.createElement('div'); div.className = 'post-card';
+      for (const post of all) {
+        const userSnap = await db.ref(`users/${post.uid}`).once('value');
+        const user = userSnap.val() || { name: 'Ghost', photoURL: '', email: '' };
+        const likeCount = post.likes ? Object.keys(post.likes).length : 0;
+        const isLiked = post.likes && post.likes[currentUser.uid];
+        const commentCount = post.comments ? Object.keys(post.comments).length : 0;
+        
+        const div = document.createElement('div');
+        div.className = 'post-card';
         div.innerHTML = `
-          <div class="post-header" onclick="viewProfile('${p.uid}')">
-            <img class="avatar-sm" src="${user.photoURL||'https://ui-avatars.com/api/?background=0095f6'}" onerror="this.src='https://ui-avatars.com/api/?background=555'">
-            <div><div class="post-name">${escapeHtml(user.name)}</div><div class="post-handle" style="font-size:0.7rem;color:#8e98b3;">@${user.email?.split('@')[0]}</div></div>
+          <div class="post-header" onclick="viewProfile('${post.uid}')">
+            <img class="avatar-sm" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6'}" onerror="this.src='https://ui-avatars.com/api/?background=555'">
+            <div>
+              <div class="post-name">${escapeHtml(user.name)}</div>
+              <div class="post-handle">@${escapeHtml(user.email?.split('@')[0] || 'user')}</div>
+            </div>
           </div>
-          <div class="post-text" style="padding:0 12px 4px;">${escapeHtml(p.text)}</div>
-          ${p.image ? `<img class="post-media" src="${p.image}" onclick="window.open(this.src)">` : ''}
+          <div class="post-text">${escapeHtml(post.text)}</div>
+          ${post.image ? `<img class="post-media" src="${post.image}" onclick="window.open(this.src)">` : ''}
           <div class="post-stats">
-            <span><i class="fas fa-heart ${liked?'liked':''}" data-id="${p.id}"></i> ${likes}</span>
-            <span onclick="openCommentModal('post','${p.id}')"><i class="fas fa-comment"></i> ${commentsCount}</span>
-            <span onclick="sharePost('${p.id}')"><i class="fas fa-share"></i> Share</span>
+            <span><i class="fas fa-heart ${isLiked ? 'liked' : ''}" data-id="${post.id}"></i> ${likeCount}</span>
+            <span onclick="openCommentModal('post', '${post.id}')"><i class="fas fa-comment"></i> ${commentCount}</span>
+            <span onclick="sharePost('${post.id}')"><i class="fas fa-share"></i> Share</span>
           </div>
         `;
-        let heart = div.querySelector('.fa-heart');
-        heart?.addEventListener('click', async (e) => { e.stopPropagation(); let ref = db.ref(`posts/${p.id}/likes/${currentUser.uid}`); if(liked) await ref.remove(); else await ref.set(true); });
+        
+        const heart = div.querySelector('.fa-heart');
+        heart?.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const likeRef = db.ref(`posts/${post.id}/likes/${currentUser.uid}`);
+          if (isLiked) await likeRef.remove();
+          else await likeRef.set(true);
+        });
+        
         container.appendChild(div);
       }
     });
   }
 
-  // Explore random posts
+  // Load Explore
   async function loadExplore() {
-    let posts = (await db.ref('posts').once('value')).val()||{};
-    let arr = Object.values(posts).sort(()=>0.5-Math.random()).slice(0,30);
-    let grid = document.getElementById('exploreGrid');
-    grid.innerHTML = arr.map(p=>`<div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">${p.image?`<img src="${p.image}">`:'<i class="fas fa-code"></i>'}</div>`).join('');
+    const posts = (await db.ref('posts').once('value')).val() || {};
+    const arr = Object.values(posts).sort(() => 0.5 - Math.random()).slice(0, 30);
+    const grid = document.getElementById('exploreGrid');
+    grid.innerHTML = arr.map(p => `
+      <div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">
+        ${p.image ? `<img src="${p.image}">` : '<i class="fas fa-code" style="font-size:2rem;"></i>'}
+      </div>
+    `).join('');
   }
 
-  // REELS (vertical swipe + comments)
-  let reelsData = [];
+  // Load Reels
   async function loadReels() {
-    let snap = await db.ref('reels').once('value');
+    const snap = await db.ref('reels').once('value');
     let reels = snap.val() || {};
-    if(Object.keys(reels).length === 0) {
-      // seed demo reels
-      let demo = [
-        { id:'r1', title:"TCP/IP deep dive", creator:"netwizard", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} },
-        { id:'r2', title:"Buffer overflow explained", creator:"0xgray", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} },
-        { id:'r3', title:"Wireless pentesting", creator:"wifihacker", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} }
-      ];
-      for(let r of demo) await db.ref(`reels/${r.id}`).set(r);
-      reelsData = demo;
-    } else {
-      reelsData = Object.values(reels);
+    let reelsArray = Object.values(reels).reverse();
+    
+    const container = document.getElementById('reelsSwiper');
+    if (reelsArray.length === 0) {
+      container.innerHTML = '<div class="loading">No reels yet. Upload your first reel!</div>';
+      return;
     }
-    renderReels();
-  }
-
-  function renderReels() {
-    let container = document.getElementById('reelsSwiper');
-    container.innerHTML = reelsData.map((r, idx) => `
+    
+    container.innerHTML = reelsArray.map(r => `
       <div class="reel" data-reelid="${r.id}">
         <video src="${r.videoUrl}" loop muted playsinline></video>
-        <div style="padding:0.5rem; width:100%;">
+        <div class="reel-info">
           <div style="display:flex; justify-content:space-between;">
-            <div><b>${escapeHtml(r.title)}</b> by <span onclick="viewProfile('${r.creatorId||'unknown'}')" style="cursor:pointer;">${escapeHtml(r.creator)}</span></div>
-            <div><i class="fas fa-heart ${r.likes && r.likes[currentUser?.uid] ? 'liked' : ''}" data-reelid="${r.id}"></i> ${r.likes?Object.keys(r.likes).length:0}</div>
+            <div><b>${escapeHtml(r.title)}</b> by <span onclick="viewProfile('${r.creatorId}')" style="cursor:pointer; color:#0095f6;">${escapeHtml(r.creator)}</span></div>
+            <div><i class="fas fa-heart ${r.likes && r.likes[currentUser?.uid] ? 'liked' : ''}" data-reelid="${r.id}"></i> ${r.likes ? Object.keys(r.likes).length : 0}</div>
           </div>
           <div class="post-stats" style="padding:0; margin-top:4px;">
-            <span onclick="openCommentModal('reel','${r.id}')"><i class="fas fa-comment"></i> ${r.comments?Object.keys(r.comments).length:0}</span>
+            <span onclick="openCommentModal('reel', '${r.id}')"><i class="fas fa-comment"></i> ${r.comments ? Object.keys(r.comments).length : 0}</span>
             <span onclick="shareReel('${r.id}')"><i class="fas fa-share"></i> Share</span>
           </div>
         </div>
       </div>
     `).join('');
+    
     // Autoplay visible reel
-    let observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        let vid = entry.target.querySelector('video');
-        if(entry.isIntersecting) vid?.play();
-        else vid?.pause();
+        const video = entry.target.querySelector('video');
+        if (entry.isIntersecting) video?.play();
+        else video?.pause();
       });
     }, { threshold: 0.5 });
+    
     document.querySelectorAll('.reel').forEach(el => observer.observe(el));
+    
     // Like reel
     document.querySelectorAll('.fa-heart[data-reelid]').forEach(heart => {
       heart.addEventListener('click', async (e) => {
         e.stopPropagation();
-        let reelId = heart.dataset.reelid;
-        let reelRef = db.ref(`reels/${reelId}/likes/${currentUser.uid}`);
-        let current = heart.classList.contains('liked');
-        if(current) await reelRef.remove();
+        const reelId = heart.dataset.reelid;
+        const reelRef = db.ref(`reels/${reelId}/likes/${currentUser.uid}`);
+        const current = heart.classList.contains('liked');
+        if (current) await reelRef.remove();
         else await reelRef.set(true);
-        loadReels(); // refresh
+        loadReels();
       });
     });
   }
 
-  // PROFILE view (dynamic)
+  // Upload Reel
+  document.getElementById('openReelModal').onclick = () => document.getElementById('reelModal').style.display = 'flex';
+  document.getElementById('submitReelBtn').onclick = async () => {
+    const title = document.getElementById('reelTitle').value.trim();
+    const file = document.getElementById('reelVideoFile').files[0];
+    if (!title || !file) return alert("Please add title and video file");
+    if (file.size > 10 * 1024 * 1024) return alert("Video too large (max 10MB)");
+    
+    const videoBase64 = await fileToBase64(file);
+    const newReel = {
+      id: Date.now().toString(),
+      title: title,
+      creator: currentUser.displayName || currentUser.email.split('@')[0],
+      creatorId: currentUser.uid,
+      videoUrl: videoBase64,
+      timestamp: Date.now(),
+      likes: {},
+      comments: {}
+    };
+    
+    await db.ref(`reels/${newReel.id}`).set(newReel);
+    closeModal('reelModal');
+    document.getElementById('reelTitle').value = '';
+    document.getElementById('reelVideoFile').value = '';
+    document.getElementById('reelPreview').innerHTML = '';
+    loadReels();
+  };
+  
+  document.getElementById('reelVideoFile').onchange = (e) => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('reelPreview').innerHTML = `<video src="${ev.target.result}" controls style="max-width:100%; max-height:200px; margin-top:8px;"></video>`;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  // Create Post
+  document.getElementById('openPostModal').onclick = () => document.getElementById('postModal').style.display = 'flex';
+  document.getElementById('submitPostBtn').onclick = async () => {
+    const text = document.getElementById('postText').value.trim();
+    const file = document.getElementById('postImageFile').files[0];
+    const image = file ? await fileToBase64(file) : null;
+    if (!text && !image) return alert("Write something or add image");
+    
+    await db.ref('posts').push({
+      uid: currentUser.uid,
+      text: text || '',
+      image: image,
+      timestamp: Date.now(),
+      likes: {},
+      comments: {}
+    });
+    
+    document.getElementById('postText').value = '';
+    document.getElementById('postImageFile').value = '';
+    document.getElementById('postPreview').innerHTML = '';
+    closeModal('postModal');
+    loadPosts();
+  };
+  
+  document.getElementById('postImageFile').onchange = (e) => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('postPreview').innerHTML = `<img src="${ev.target.result}" style="max-width:100%; max-height:150px; margin-top:8px;">`;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  // Comments Modal
+  window.openCommentModal = async (type, id) => {
+    currentCommentType = type;
+    currentCommentId = id;
+    let commentsObj = {};
+    if (type === 'post') commentsObj = (await db.ref(`posts/${id}/comments`).once('value')).val() || {};
+    else commentsObj = (await db.ref(`reels/${id}/comments`).once('value')).val() || {};
+    
+    const container = document.getElementById('commentsList');
+    container.innerHTML = Object.values(commentsObj).map(c => `
+      <div class="comment-item"><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.text)}</div>
+    `).join('') || '<div>No comments yet</div>';
+    
+    document.getElementById('commentModal').style.display = 'flex';
+  };
+  
+  document.getElementById('addCommentBtn').onclick = async () => {
+    const text = document.getElementById('newCommentText').value.trim();
+    if (!text) return;
+    
+    const commentData = {
+      uid: currentUser.uid,
+      name: currentUser.displayName || currentUser.email,
+      text: text,
+      timestamp: Date.now()
+    };
+    
+    if (currentCommentType === 'post') {
+      await db.ref(`posts/${currentCommentId}/comments`).push(commentData);
+    } else {
+      await db.ref(`reels/${currentCommentId}/comments`).push(commentData);
+    }
+    
+    document.getElementById('newCommentText').value = '';
+    openCommentModal(currentCommentType, currentCommentId);
+  };
+
+  // Share Functions
+  window.sharePost = (id) => {
+    navigator.clipboard?.writeText(window.location.origin + '/post/' + id);
+    alert("Post link copied!");
+  };
+  
+  window.shareReel = (id) => {
+    navigator.clipboard?.writeText(window.location.origin + '/reel/' + id);
+    alert("Reel link copied!");
+  };
+
+  // View Profile (fixed navigation)
   window.viewProfile = async function(uid) {
-    let userSnap = await db.ref(`users/${uid}`).once('value');
-    let user = userSnap.val();
-    if(!user) return;
-    let followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
-    let followingSnap = await db.ref(`follows/${uid}/following`).once('value');
-    let followers = followersSnap.val() ? Object.keys(followersSnap.val()).length : 0;
-    let followingCount = followingSnap.val() ? Object.keys(followingSnap.val()).length : 0;
-    let postsSnap = await db.ref('posts').orderByChild('uid').equalTo(uid).once('value');
-    let postsCount = postsSnap.val() ? Object.keys(postsSnap.val()).length : 0;
-    let isFollowing = followingSet.has(uid);
-    let container = document.getElementById('profileContainer');
+    const userSnap = await db.ref(`users/${uid}`).once('value');
+    const user = userSnap.val();
+    if (!user) return;
+    
+    const followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
+    const followingSnap = await db.ref(`follows/${uid}/following`).once('value');
+    const followers = followersSnap.val() ? Object.keys(followersSnap.val()).length : 0;
+    const followingCount = followingSnap.val() ? Object.keys(followingSnap.val()).length : 0;
+    const postsSnap = await db.ref('posts').orderByChild('uid').equalTo(uid).once('value');
+    const postsCount = postsSnap.val() ? Object.keys(postsSnap.val()).length : 0;
+    const isFollowing = followingSet.has(uid);
+    
+    const container = document.getElementById('profileContainer');
     container.innerHTML = `
       <div class="profile-header">
-        <img class="profile-avatar" src="${user.photoURL||'https://ui-avatars.com/api/?background=0095f6'}" onclick="${uid===currentUser.uid ? 'changeProfilePic()' : ''}" style="cursor:pointer;">
+        <img class="profile-avatar" src="${user.photoURL || 'https://ui-avatars.com/api/?background=0095f6'}" onclick="${uid === currentUser.uid ? 'changeProfilePic()' : ''}" style="cursor:pointer;">
         <div class="profile-name">${escapeHtml(user.name)}</div>
         <div class="profile-bio">${escapeHtml(user.bio || 'Network engineer | builder')}</div>
-        ${uid===currentUser.uid ? '<button class="btn-primary" id="editBioBtn">Edit bio</button>' : `<button class="btn-primary" id="followActionBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>`}
+        ${uid === currentUser.uid ? 
+          '<button class="btn-primary" id="editBioBtn">Edit bio</button>' : 
+          `<button class="btn-primary" id="followActionBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>`
+        }
       </div>
       <div class="stats-row">
-        <div class="stat-item" onclick="showFollowersList('${uid}')"><div class="stat-number">${followers}</div><div>Followers</div></div>
-        <div class="stat-item" onclick="showFollowingList('${uid}')"><div class="stat-number">${followingCount}</div><div>Following</div></div>
-        <div class="stat-item"><div class="stat-number">${postsCount}</div><div>Posts</div></div>
+        <div class="stat-item" onclick="alert('Followers list coming soon')"><div class="stat-number">${followers}</div><div class="stat-label">Followers</div></div>
+        <div class="stat-item" onclick="alert('Following list coming soon')"><div class="stat-number">${followingCount}</div><div class="stat-label">Following</div></div>
+        <div class="stat-item"><div class="stat-number">${postsCount}</div><div class="stat-label">Posts</div></div>
       </div>
       <div class="grid-posts" id="profileUserPosts"></div>
     `;
-    if(uid===currentUser.uid) document.getElementById('editBioBtn')?.addEventListener('click', async ()=>{ let newBio=prompt("Edit bio:",user.bio); if(newBio) await db.ref(`users/${currentUser.uid}/bio`).set(newBio); viewProfile(uid); });
-    else document.getElementById('followActionBtn')?.addEventListener('click', ()=> isFollowing ? unfollowUser(uid) : followUser(uid));
-    // render user posts
-    let userPosts = Object.entries(postsSnap.val()||{}).map(([id,p])=>({id,...p}));
-    let grid = document.getElementById('profileUserPosts');
-    grid.innerHTML = userPosts.map(p=>`<div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">${p.image?`<img src="${p.image}">`:'<i class="fas fa-code"></i>'}</div>`).join('');
-    document.querySelector('.nav-item[data-page="profile"]').click();
+    
+    if (uid === currentUser.uid) {
+      const editBtn = document.getElementById('editBioBtn');
+      if (editBtn) {
+        editBtn.onclick = async () => {
+          const newBio = prompt("Edit bio:", user.bio);
+          if (newBio) await db.ref(`users/${currentUser.uid}/bio`).set(newBio);
+          viewProfile(uid);
+        };
+      }
+    } else {
+      const followBtn = document.getElementById('followActionBtn');
+      if (followBtn) {
+        followBtn.onclick = () => isFollowing ? unfollowUser(uid) : followUser(uid);
+      }
+    }
+    
+    const userPosts = Object.entries(postsSnap.val() || {}).map(([id, p]) => ({ id, ...p }));
+    const grid = document.getElementById('profileUserPosts');
+    grid.innerHTML = userPosts.map(p => `
+      <div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">
+        ${p.image ? `<img src="${p.image}">` : '<i class="fas fa-code" style="font-size:2rem;"></i>'}
+      </div>
+    `).join('');
+    
+    // Navigate to profile page
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelector('.nav-item[data-page="profile"]').classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('profilePage').classList.add('active');
+    document.getElementById('pageTitle').innerText = 'Profile';
   };
 
+  // Change Profile Picture
   window.changeProfilePic = async () => {
-    let input = document.createElement('input'); input.type='file'; input.accept='image/*';
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
     input.onchange = async (e) => {
-      let file = e.target.files[0];
-      if(file) { let base = await fileToBase64(file); await db.ref(`users/${currentUser.uid}/photoURL`).set(base); viewProfile(currentUser.uid); loadPosts(); }
+      const file = e.target.files[0];
+      if (file) {
+        const base64 = await fileToBase64(file);
+        await db.ref(`users/${currentUser.uid}/photoURL`).set(base64);
+        viewProfile(currentUser.uid);
+        loadPosts();
+      }
     };
     input.click();
   };
 
-  window.showFollowersList = async (uid) => {
-    let snap = await db.ref(`follows/${uid}/followers`).once('value');
-    let list = snap.val() || {};
-    let names = [];
-    for(let fid of Object.keys(list)) {
-      let u = (await db.ref(`users/${fid}`).once('value')).val();
-      if(u) names.push(`<div style="padding:8px; cursor:pointer;" onclick="viewProfile('${fid}'); closeModal('followersModal');">${escapeHtml(u.name)}</div>`);
-    }
-    alert(names.join('\n') || 'No followers');
-  };
-  window.showFollowingList = async (uid) => {
-    let snap = await db.ref(`follows/${uid}/following`).once('value');
-    let list = snap.val() || {};
-    let names = [];
-    for(let fid of Object.keys(list)) {
-      let u = (await db.ref(`users/${fid}`).once('value')).val();
-      if(u) names.push(`<div style="padding:8px; cursor:pointer;" onclick="viewProfile('${fid}');">${escapeHtml(u.name)}</div>`);
-    }
-    alert(names.join('\n') || 'Not following anyone');
-  };
-
-  // POST creation
-  document.getElementById('openPostModal').onclick = () => document.getElementById('postModal').style.display='flex';
-  document.getElementById('submitPostBtn').onclick = async () => {
-    let text = document.getElementById('postText').value.trim();
-    let file = document.getElementById('postImageFile').files[0];
-    let image = file ? await fileToBase64(file) : null;
-    if(!text && !image) return alert("Write something or add image");
-    await db.ref('posts').push({ uid: currentUser.uid, text: text||'', image: image, timestamp: Date.now(), likes:{}, comments:{} });
-    document.getElementById('postText').value=''; document.getElementById('postImageFile').value=''; document.getElementById('postPreview').innerHTML='';
-    closeModal('postModal'); loadPosts();
-  };
-  document.getElementById('postImageFile').onchange = (e) => {
-    if(e.target.files[0]){ let reader=new FileReader(); reader.onload=(ev)=>document.getElementById('postPreview').innerHTML=`<img src="${ev.target.result}" style="max-width:100%; max-height:150px; margin-top:8px;">`; reader.readAsDataURL(e.target.files[0]); }
-  };
-
-  // COMMENT GUI (modal)
-  let currentCommentId = null; let currentCommentType = null;
-  window.openCommentModal = async (type, id) => {
-    currentCommentType = type; currentCommentId = id;
-    let commentsObj = {};
-    if(type === 'post') commentsObj = (await db.ref(`posts/${id}/comments`).once('value')).val() || {};
-    else commentsObj = (await db.ref(`reels/${id}/comments`).once('value')).val() || {};
-    let container = document.getElementById('commentsList');
-    container.innerHTML = Object.values(commentsObj).map(c => `<div class="comment-item"><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.text)}</div>`).join('') || '<div>No comments yet</div>';
-    document.getElementById('commentModal').style.display = 'flex';
-  };
-  document.getElementById('addCommentBtn').onclick = async () => {
-    let text = document.getElementById('newCommentText').value.trim();
-    if(!text) return;
-    let commentData = { uid: currentUser.uid, name: currentUser.displayName || currentUser.email, text: text, timestamp: Date.now() };
-    if(currentCommentType === 'post') await db.ref(`posts/${currentCommentId}/comments`).push(commentData);
-    else await db.ref(`reels/${currentCommentId}/comments`).push(commentData);
-    document.getElementById('newCommentText').value = '';
-    openCommentModal(currentCommentType, currentCommentId); // refresh
-  };
-
-  window.sharePost = (id) => { navigator.clipboard?.writeText(window.location.origin+'/post/'+id); alert("Post link copied!"); };
-  window.shareReel = (id) => { navigator.clipboard?.writeText(window.location.origin+'/reel/'+id); alert("Reel link copied!"); };
-  document.getElementById('notifIcon').onclick = () => alert("🔔 Real‑time notifications: likes, comments, follows appear here.");
-
   // Navigation
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.onclick = () => {
-      let page = btn.dataset.page;
-      document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+      const page = btn.dataset.page;
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(`${page}Page`).classList.add('active');
-      if(page === 'profile') viewProfile(currentUser.uid);
-      if(page === 'explore') loadExplore();
-      if(page === 'reels') loadReels();
-      if(page === 'home') loadPosts();
+      
+      const titles = { home: 'HackerNet', explore: 'Explore', reels: 'Reels', profile: 'Profile', chat: 'Messages' };
+      document.getElementById('pageTitle').innerText = titles[page];
+      
+      if (page === 'profile') viewProfile(currentUser.uid);
+      if (page === 'explore') loadExplore();
+      if (page === 'reels') loadReels();
+      if (page === 'home') loadPosts();
     };
   });
 
-  // AUTH
+  // Auth State
   auth.onAuthStateChanged(async (user) => {
-    if(user) {
+    if (user) {
       currentUser = user;
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
-      await db.ref('users/'+user.uid).set({
+      
+      await db.ref('users/' + user.uid).set({
         uid: user.uid,
         name: user.displayName || user.email.split('@')[0],
         email: user.email,
         photoURL: user.photoURL || '',
         bio: 'Hacker | Engineer',
         online: true
-      }, {merge: true});
-      loadPosts(); loadExplore(); loadReels();
+      }, { merge: true });
+      
+      // Add demo reels if empty
+      const reelsSnap = await db.ref('reels').once('value');
+      if (!reelsSnap.exists()) {
+        const demoSample = {
+          id: 'demo1',
+          title: 'Sample Reel',
+          creator: 'HackerNet',
+          creatorId: user.uid,
+          videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+          timestamp: Date.now(),
+          likes: {},
+          comments: {}
+        };
+        await db.ref('reels/demo1').set(demoSample);
+      }
+      
+      loadPosts();
+      loadExplore();
+      loadReels();
     } else {
       document.getElementById('authScreen').style.display = 'flex';
       document.getElementById('mainApp').style.display = 'none';
     }
   });
-  document.getElementById('googleSignInBtn').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  
+  // Google Sign In
+  document.getElementById('googleSignInBtn').onclick = () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  };
 </script>
 </body>
 </html>
