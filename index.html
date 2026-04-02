@@ -1,133 +1,646 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hex | Social</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>HackerNet — Social for Engineers</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #000000;
+      color: #ffffff;
+      padding-bottom: 70px;
+    }
+
+    /* Auth screen */
+    .auth-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at 30% 20%, #0a0f1e, #020408);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .auth-card {
+      background: rgba(18, 22, 35, 0.96);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      padding: 2rem;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      border: 1px solid rgba(59,130,246,0.3);
+    }
+
+    .auth-card h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #a0e9ff, #6b8cff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .google-btn {
+      background: #1f2937;
+      border: 1px solid #4b5563;
+      padding: 12px;
+      border-radius: 40px;
+      width: 100%;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    /* Main app */
+    .app-container {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto;
+      background: #000;
+      min-height: 100vh;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background: #000000cc;
+      backdrop-filter: blur(12px);
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #262626;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 99;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      background: linear-gradient(130deg, #70e0ff, #9f7aff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #000000e6;
+      backdrop-filter: blur(12px);
+      border-top: 1px solid #262626;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.7rem 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      z-index: 100;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: #8e98b3;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #0095f6;
+    }
+
+    .page {
+      display: none;
+      padding: 1rem;
+      animation: fade 0.2s;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Post card */
+    .post-card {
+      background: #121212;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #262626;
+      overflow: hidden;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .avatar-sm {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-media {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    .post-stats {
+      display: flex;
+      gap: 1.2rem;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: #8e98b3;
+    }
+
+    .post-stats i {
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .liked {
+      color: #ff3040;
+    }
+
+    /* Profile */
+    .profile-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0095f6;
+      cursor: pointer;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      background: #121212;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .grid-posts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .grid-item {
+      aspect-ratio: 1;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Reels */
+    .reels-container {
+      height: 80vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      border-radius: 1rem;
+    }
+
+    .reel {
+      scroll-snap-align: start;
+      height: 80vh;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .reel video {
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 1rem;
+    }
+
+    /* Modal for comments */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background: #121212;
+      border-radius: 1.5rem;
+      width: 90%;
+      max-width: 450px;
+      padding: 1.5rem;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .comment-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #262626;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: #0095f6;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body>
 
-    <div id="auth-screen" class="flex flex-col items-center justify-center min-h-screen">
-        <div class="bg-white p-8 border border-gray-300 w-80 text-center">
-            <h1 class="text-4xl font-bold mb-8 italic">Hex</h1>
-            <input id="email" type="email" placeholder="Email" class="w-full p-2 mb-2 border border-gray-300 bg-gray-50 rounded-sm text-xs focus:outline-none focus:border-gray-400">
-            <input id="password" type="password" placeholder="Password" class="w-full p-2 mb-4 border border-gray-300 bg-gray-50 rounded-sm text-xs focus:outline-none focus:border-gray-400">
-            <button id="btn-login" class="w-full bg-blue-500 text-white py-1 rounded font-semibold text-sm hover:bg-blue-600">Log In</button>
-            <div class="flex items-center my-4">
-                <div class="flex-grow border-t border-gray-300"></div>
-                <span class="mx-4 text-gray-400 text-xs font-semibold">OR</span>
-                <div class="flex-grow border-t border-gray-300"></div>
-            </div>
-            <button id="btn-signup" class="text-blue-900 text-xs font-semibold">Sign up with Email</button>
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-container">
+  <div class="auth-card">
+    <h1>⚡ HackerNet</h1>
+    <p style="margin: 0.5rem 0;">For engineers, by engineers</p>
+    <button id="googleSignInBtn" class="google-btn"><i class="fab fa-google"></i> Continue with Google</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="app-container">
+  <div class="header">
+    <h1 id="pageTitle">HackerNet</h1>
+    <div><i class="fas fa-plus-circle" id="openPostModal" style="font-size:1.4rem; margin-right:1rem;"></i><i class="fas fa-heart" id="notifIcon"></i></div>
+  </div>
+
+  <!-- PAGES -->
+  <div id="homePage" class="page active"><div id="feedContainer"></div></div>
+  <div id="explorePage" class="page"><div id="exploreGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:2px;"></div></div>
+  <div id="reelsPage" class="page"><div id="reelsSwiper" class="reels-container"></div></div>
+  <div id="profilePage" class="page"><div id="profileContainer"></div></div>
+  <div id="chatPage" class="page"><div style="text-align:center; padding:2rem;">💬 Chat coming soon</div></div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" data-page="home"><i class="fas fa-home"></i></button>
+    <button class="nav-item" data-page="explore"><i class="fas fa-compass"></i></button>
+    <button class="nav-item" data-page="reels"><i class="fas fa-film"></i></button>
+    <button class="nav-item" data-page="profile"><i class="fas fa-user"></i></button>
+    <button class="nav-item" data-page="chat"><i class="fas fa-comment"></i></button>
+  </div>
+</div>
+
+<!-- POST MODAL -->
+<div id="postModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" style="float:right; font-size:1.5rem; cursor:pointer;" onclick="closeModal('postModal')">&times;</span>
+    <h3>Create post</h3>
+    <textarea id="postText" rows="3" placeholder="Share your engineering thought..." style="width:100%; background:#1a1a1a; border:1px solid #262626; border-radius:8px; padding:8px; color:white; margin:1rem 0;"></textarea>
+    <label for="postImageFile" style="display:inline-block; background:#1f2937; padding:6px 12px; border-radius:20px; cursor:pointer;"><i class="fas fa-image"></i> Add image</label>
+    <input type="file" id="postImageFile" accept="image/*" style="display:none">
+    <div id="postPreview"></div>
+    <button id="submitPostBtn" class="btn-primary">Post</button>
+  </div>
+</div>
+
+<!-- COMMENT MODAL -->
+<div id="commentModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" style="float:right; font-size:1.5rem; cursor:pointer;" onclick="closeModal('commentModal')">&times;</span>
+    <h3>Comments</h3>
+    <div id="commentsList" style="max-height: 300px; overflow-y: auto; margin: 1rem 0;"></div>
+    <textarea id="newCommentText" rows="2" placeholder="Write a comment..." style="width:100%; background:#1a1a1a; border:1px solid #262626; border-radius:8px; padding:8px; color:white;"></textarea>
+    <button id="addCommentBtn" class="btn-primary">Add comment</button>
+  </div>
+</div>
+
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBF1c8eotfssxA6weC9B9hD_pOrpm4jQIQ",
+    authDomain: "hex-chat-faaa5.firebaseapp.com",
+    databaseURL: "https://hex-chat-faaa5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "hex-chat-faaa5",
+    storageBucket: "hex-chat-faaa5.firebasestorage.app",
+    messagingSenderId: "900244800752",
+    appId: "1:900244800752:web:31662e1d280b98a5f0ee35"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  let currentUser = null;
+  let followingSet = new Set();
+  let currentCommentTarget = { type: 'post', id: null }; // for post or reel comments
+
+  // Helper
+  function escapeHtml(str) { return str?.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) || ''; }
+  function fileToBase64(file) { return new Promise(r => { let fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(file); }); }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  // Load following status
+  async function loadFollowing() {
+    let snap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
+    followingSet = new Set(Object.keys(snap.val() || {}));
+  }
+
+  // Follow / Unfollow
+  async function followUser(uid) { if(uid===currentUser.uid) return; await db.ref(`follows/${currentUser.uid}/following/${uid}`).set(true); await db.ref(`follows/${uid}/followers/${currentUser.uid}`).set(true); followingSet.add(uid); loadPosts(); }
+  async function unfollowUser(uid) { await db.ref(`follows/${currentUser.uid}/following/${uid}`).remove(); await db.ref(`follows/${uid}/followers/${currentUser.uid}`).remove(); followingSet.delete(uid); loadPosts(); }
+
+  // POSTS FEED (followed + random)
+  async function loadPosts() {
+    await loadFollowing();
+    db.ref('posts').on('value', async (snap) => {
+      let posts = Object.entries(snap.val()||{}).map(([id,d])=>({id,...d}));
+      let followed = posts.filter(p => followingSet.has(p.uid) || p.uid===currentUser.uid);
+      let randomOthers = posts.filter(p => !followingSet.has(p.uid) && p.uid!==currentUser.uid).sort(()=>0.5-Math.random()).slice(0,8);
+      let all = [...followed, ...randomOthers].sort((a,b)=>b.timestamp - a.timestamp);
+      let container = document.getElementById('feedContainer');
+      container.innerHTML = '';
+      for(let p of all) {
+        let user = (await db.ref(`users/${p.uid}`).once('value')).val() || {name:'Ghost',photoURL:'',email:''};
+        let likes = p.likes ? Object.keys(p.likes).length : 0;
+        let liked = p.likes && p.likes[currentUser.uid];
+        let commentsCount = p.comments ? Object.keys(p.comments).length : 0;
+        let div = document.createElement('div'); div.className = 'post-card';
+        div.innerHTML = `
+          <div class="post-header" onclick="viewProfile('${p.uid}')">
+            <img class="avatar-sm" src="${user.photoURL||'https://ui-avatars.com/api/?background=0095f6'}" onerror="this.src='https://ui-avatars.com/api/?background=555'">
+            <div><div class="post-name">${escapeHtml(user.name)}</div><div class="post-handle" style="font-size:0.7rem;color:#8e98b3;">@${user.email?.split('@')[0]}</div></div>
+          </div>
+          <div class="post-text" style="padding:0 12px 4px;">${escapeHtml(p.text)}</div>
+          ${p.image ? `<img class="post-media" src="${p.image}" onclick="window.open(this.src)">` : ''}
+          <div class="post-stats">
+            <span><i class="fas fa-heart ${liked?'liked':''}" data-id="${p.id}"></i> ${likes}</span>
+            <span onclick="openCommentModal('post','${p.id}')"><i class="fas fa-comment"></i> ${commentsCount}</span>
+            <span onclick="sharePost('${p.id}')"><i class="fas fa-share"></i> Share</span>
+          </div>
+        `;
+        let heart = div.querySelector('.fa-heart');
+        heart?.addEventListener('click', async (e) => { e.stopPropagation(); let ref = db.ref(`posts/${p.id}/likes/${currentUser.uid}`); if(liked) await ref.remove(); else await ref.set(true); });
+        container.appendChild(div);
+      }
+    });
+  }
+
+  // Explore random posts
+  async function loadExplore() {
+    let posts = (await db.ref('posts').once('value')).val()||{};
+    let arr = Object.values(posts).sort(()=>0.5-Math.random()).slice(0,30);
+    let grid = document.getElementById('exploreGrid');
+    grid.innerHTML = arr.map(p=>`<div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">${p.image?`<img src="${p.image}">`:'<i class="fas fa-code"></i>'}</div>`).join('');
+  }
+
+  // REELS (vertical swipe + comments)
+  let reelsData = [];
+  async function loadReels() {
+    let snap = await db.ref('reels').once('value');
+    let reels = snap.val() || {};
+    if(Object.keys(reels).length === 0) {
+      // seed demo reels
+      let demo = [
+        { id:'r1', title:"TCP/IP deep dive", creator:"netwizard", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} },
+        { id:'r2', title:"Buffer overflow explained", creator:"0xgray", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} },
+        { id:'r3', title:"Wireless pentesting", creator:"wifihacker", videoUrl:"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", likes:{}, comments:{} }
+      ];
+      for(let r of demo) await db.ref(`reels/${r.id}`).set(r);
+      reelsData = demo;
+    } else {
+      reelsData = Object.values(reels);
+    }
+    renderReels();
+  }
+
+  function renderReels() {
+    let container = document.getElementById('reelsSwiper');
+    container.innerHTML = reelsData.map((r, idx) => `
+      <div class="reel" data-reelid="${r.id}">
+        <video src="${r.videoUrl}" loop muted playsinline></video>
+        <div style="padding:0.5rem; width:100%;">
+          <div style="display:flex; justify-content:space-between;">
+            <div><b>${escapeHtml(r.title)}</b> by <span onclick="viewProfile('${r.creatorId||'unknown'}')" style="cursor:pointer;">${escapeHtml(r.creator)}</span></div>
+            <div><i class="fas fa-heart ${r.likes && r.likes[currentUser?.uid] ? 'liked' : ''}" data-reelid="${r.id}"></i> ${r.likes?Object.keys(r.likes).length:0}</div>
+          </div>
+          <div class="post-stats" style="padding:0; margin-top:4px;">
+            <span onclick="openCommentModal('reel','${r.id}')"><i class="fas fa-comment"></i> ${r.comments?Object.keys(r.comments).length:0}</span>
+            <span onclick="shareReel('${r.id}')"><i class="fas fa-share"></i> Share</span>
+          </div>
         </div>
-    </div>
+      </div>
+    `).join('');
+    // Autoplay visible reel
+    let observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        let vid = entry.target.querySelector('video');
+        if(entry.isIntersecting) vid?.play();
+        else vid?.pause();
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.reel').forEach(el => observer.observe(el));
+    // Like reel
+    document.querySelectorAll('.fa-heart[data-reelid]').forEach(heart => {
+      heart.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        let reelId = heart.dataset.reelid;
+        let reelRef = db.ref(`reels/${reelId}/likes/${currentUser.uid}`);
+        let current = heart.classList.contains('liked');
+        if(current) await reelRef.remove();
+        else await reelRef.set(true);
+        loadReels(); // refresh
+      });
+    });
+  }
 
-    <div id="app-screen" class="hidden">
-        <nav class="fixed top-0 w-full bg-white border-b border-gray-300 z-50">
-            <div class="max-w-4xl mx-auto flex justify-between items-center h-14 px-4">
-                <h1 class="text-2xl font-bold italic">Hex</h1>
-                <div class="flex space-x-5 text-xl">
-                    <i class="fa-solid fa-house cursor-pointer"></i>
-                    <i class="fa-regular fa-paper-plane cursor-pointer"></i>
-                    <i class="fa-regular fa-square-plus cursor-pointer" id="open-post-modal"></i>
-                    <i class="fa-regular fa-compass cursor-pointer"></i>
-                    <i class="fa-regular fa-heart cursor-pointer"></i>
-                    <button id="btn-logout" class="text-sm font-semibold text-blue-500">Logout</button>
-                </div>
-            </div>
-        </nav>
+  // PROFILE view (dynamic)
+  window.viewProfile = async function(uid) {
+    let userSnap = await db.ref(`users/${uid}`).once('value');
+    let user = userSnap.val();
+    if(!user) return;
+    let followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
+    let followingSnap = await db.ref(`follows/${uid}/following`).once('value');
+    let followers = followersSnap.val() ? Object.keys(followersSnap.val()).length : 0;
+    let followingCount = followingSnap.val() ? Object.keys(followingSnap.val()).length : 0;
+    let postsSnap = await db.ref('posts').orderByChild('uid').equalTo(uid).once('value');
+    let postsCount = postsSnap.val() ? Object.keys(postsSnap.val()).length : 0;
+    let isFollowing = followingSet.has(uid);
+    let container = document.getElementById('profileContainer');
+    container.innerHTML = `
+      <div class="profile-header">
+        <img class="profile-avatar" src="${user.photoURL||'https://ui-avatars.com/api/?background=0095f6'}" onclick="${uid===currentUser.uid ? 'changeProfilePic()' : ''}" style="cursor:pointer;">
+        <div class="profile-name">${escapeHtml(user.name)}</div>
+        <div class="profile-bio">${escapeHtml(user.bio || 'Network engineer | builder')}</div>
+        ${uid===currentUser.uid ? '<button class="btn-primary" id="editBioBtn">Edit bio</button>' : `<button class="btn-primary" id="followActionBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>`}
+      </div>
+      <div class="stats-row">
+        <div class="stat-item" onclick="showFollowersList('${uid}')"><div class="stat-number">${followers}</div><div>Followers</div></div>
+        <div class="stat-item" onclick="showFollowingList('${uid}')"><div class="stat-number">${followingCount}</div><div>Following</div></div>
+        <div class="stat-item"><div class="stat-number">${postsCount}</div><div>Posts</div></div>
+      </div>
+      <div class="grid-posts" id="profileUserPosts"></div>
+    `;
+    if(uid===currentUser.uid) document.getElementById('editBioBtn')?.addEventListener('click', async ()=>{ let newBio=prompt("Edit bio:",user.bio); if(newBio) await db.ref(`users/${currentUser.uid}/bio`).set(newBio); viewProfile(uid); });
+    else document.getElementById('followActionBtn')?.addEventListener('click', ()=> isFollowing ? unfollowUser(uid) : followUser(uid));
+    // render user posts
+    let userPosts = Object.entries(postsSnap.val()||{}).map(([id,p])=>({id,...p}));
+    let grid = document.getElementById('profileUserPosts');
+    grid.innerHTML = userPosts.map(p=>`<div class="grid-item" onclick="alert('${escapeHtml(p.text)}')">${p.image?`<img src="${p.image}">`:'<i class="fas fa-code"></i>'}</div>`).join('');
+    document.querySelector('.nav-item[data-page="profile"]').click();
+  };
 
-        <main class="pt-20 pb-10 max-w-lg mx-auto">
-            <div id="feed-container" class="space-y-6">
-                </div>
-        </main>
-    </div>
+  window.changeProfilePic = async () => {
+    let input = document.createElement('input'); input.type='file'; input.accept='image/*';
+    input.onchange = async (e) => {
+      let file = e.target.files[0];
+      if(file) { let base = await fileToBase64(file); await db.ref(`users/${currentUser.uid}/photoURL`).set(base); viewProfile(currentUser.uid); loadPosts(); }
+    };
+    input.click();
+  };
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+  window.showFollowersList = async (uid) => {
+    let snap = await db.ref(`follows/${uid}/followers`).once('value');
+    let list = snap.val() || {};
+    let names = [];
+    for(let fid of Object.keys(list)) {
+      let u = (await db.ref(`users/${fid}`).once('value')).val();
+      if(u) names.push(`<div style="padding:8px; cursor:pointer;" onclick="viewProfile('${fid}'); closeModal('followersModal');">${escapeHtml(u.name)}</div>`);
+    }
+    alert(names.join('\n') || 'No followers');
+  };
+  window.showFollowingList = async (uid) => {
+    let snap = await db.ref(`follows/${uid}/following`).once('value');
+    let list = snap.val() || {};
+    let names = [];
+    for(let fid of Object.keys(list)) {
+      let u = (await db.ref(`users/${fid}`).once('value')).val();
+      if(u) names.push(`<div style="padding:8px; cursor:pointer;" onclick="viewProfile('${fid}');">${escapeHtml(u.name)}</div>`);
+    }
+    alert(names.join('\n') || 'Not following anyone');
+  };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBF1c8eotfssxA6weC9B9hD_pOrpm4jQIQ",
-            authDomain: "hex-chat-faaa5.firebaseapp.com",
-            databaseURL: "https://hex-chat-faaa5-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "hex-chat-faaa5",
-            storageBucket: "hex-chat-faaa5.firebasestorage.app",
-            messagingSenderId: "900244800752",
-            appId: "1:900244800752:web:31662e1d280b98a5f0ee35",
-            measurementId: "G-YLYZT9TCY3"
-        };
+  // POST creation
+  document.getElementById('openPostModal').onclick = () => document.getElementById('postModal').style.display='flex';
+  document.getElementById('submitPostBtn').onclick = async () => {
+    let text = document.getElementById('postText').value.trim();
+    let file = document.getElementById('postImageFile').files[0];
+    let image = file ? await fileToBase64(file) : null;
+    if(!text && !image) return alert("Write something or add image");
+    await db.ref('posts').push({ uid: currentUser.uid, text: text||'', image: image, timestamp: Date.now(), likes:{}, comments:{} });
+    document.getElementById('postText').value=''; document.getElementById('postImageFile').value=''; document.getElementById('postPreview').innerHTML='';
+    closeModal('postModal'); loadPosts();
+  };
+  document.getElementById('postImageFile').onchange = (e) => {
+    if(e.target.files[0]){ let reader=new FileReader(); reader.onload=(ev)=>document.getElementById('postPreview').innerHTML=`<img src="${ev.target.result}" style="max-width:100%; max-height:150px; margin-top:8px;">`; reader.readAsDataURL(e.target.files[0]); }
+  };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+  // COMMENT GUI (modal)
+  let currentCommentId = null; let currentCommentType = null;
+  window.openCommentModal = async (type, id) => {
+    currentCommentType = type; currentCommentId = id;
+    let commentsObj = {};
+    if(type === 'post') commentsObj = (await db.ref(`posts/${id}/comments`).once('value')).val() || {};
+    else commentsObj = (await db.ref(`reels/${id}/comments`).once('value')).val() || {};
+    let container = document.getElementById('commentsList');
+    container.innerHTML = Object.values(commentsObj).map(c => `<div class="comment-item"><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.text)}</div>`).join('') || '<div>No comments yet</div>';
+    document.getElementById('commentModal').style.display = 'flex';
+  };
+  document.getElementById('addCommentBtn').onclick = async () => {
+    let text = document.getElementById('newCommentText').value.trim();
+    if(!text) return;
+    let commentData = { uid: currentUser.uid, name: currentUser.displayName || currentUser.email, text: text, timestamp: Date.now() };
+    if(currentCommentType === 'post') await db.ref(`posts/${currentCommentId}/comments`).push(commentData);
+    else await db.ref(`reels/${currentCommentId}/comments`).push(commentData);
+    document.getElementById('newCommentText').value = '';
+    openCommentModal(currentCommentType, currentCommentId); // refresh
+  };
 
-        // --- Authentication Logic ---
-        const authScreen = document.getElementById('auth-screen');
-        const appScreen = document.getElementById('app-screen');
+  window.sharePost = (id) => { navigator.clipboard?.writeText(window.location.origin+'/post/'+id); alert("Post link copied!"); };
+  window.shareReel = (id) => { navigator.clipboard?.writeText(window.location.origin+'/reel/'+id); alert("Reel link copied!"); };
+  document.getElementById('notifIcon').onclick = () => alert("🔔 Real‑time notifications: likes, comments, follows appear here.");
 
-        document.getElementById('btn-signup').onclick = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        };
+  // Navigation
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.onclick = () => {
+      let page = btn.dataset.page;
+      document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById(`${page}Page`).classList.add('active');
+      if(page === 'profile') viewProfile(currentUser.uid);
+      if(page === 'explore') loadExplore();
+      if(page === 'reels') loadReels();
+      if(page === 'home') loadPosts();
+    };
+  });
 
-        document.getElementById('btn-login').onclick = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        };
-
-        document.getElementById('btn-logout').onclick = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
-                loadPosts();
-            } else {
-                authScreen.classList.remove('hidden');
-                appScreen.classList.add('hidden');
-            }
-        });
-
-        // --- Realtime Data Logic ---
-        function loadPosts() {
-            const postsRef = ref(db, 'posts');
-            onValue(postsRef, (snapshot) => {
-                const data = snapshot.val();
-                const feed = document.getElementById('feed-container');
-                feed.innerHTML = ''; 
-                
-                for (let id in data) {
-                    const post = data[id];
-                    feed.innerHTML += `
-                        <div class="bg-white border border-gray-300 rounded">
-                            <div class="flex items-center p-3">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 p-0.5">
-                                    <div class="w-full h-full bg-white rounded-full p-0.5">
-                                        <img src="https://ui-avatars.com/api/?name=${post.author}" class="rounded-full">
-                                    </div>
-                                </div>
-                                <span class="ml-3 font-semibold text-sm">${post.author}</span>
-                            </div>
-                            <img src="${post.imageUrl}" class="w-full">
-                            <div class="p-3">
-                                <div class="flex space-x-4 text-xl mb-2">
-                                    <i class="fa-regular fa-heart cursor-pointer"></i>
-                                    <i class="fa-regular fa-comment"></i>
-                                    <i class="fa-regular fa-paper-plane"></i>
-                                </div>
-                                <p class="text-sm"><span class="font-semibold">${post.author}</span> ${post.caption}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
-    </script>
+  // AUTH
+  auth.onAuthStateChanged(async (user) => {
+    if(user) {
+      currentUser = user;
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      await db.ref('users/'+user.uid).set({
+        uid: user.uid,
+        name: user.displayName || user.email.split('@')[0],
+        email: user.email,
+        photoURL: user.photoURL || '',
+        bio: 'Hacker | Engineer',
+        online: true
+      }, {merge: true});
+      loadPosts(); loadExplore(); loadReels();
+    } else {
+      document.getElementById('authScreen').style.display = 'flex';
+      document.getElementById('mainApp').style.display = 'none';
+    }
+  });
+  document.getElementById('googleSignInBtn').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+</script>
 </body>
 </html>
