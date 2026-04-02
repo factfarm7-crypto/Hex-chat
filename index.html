@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>HackerNet - Social for Engineers</title>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -21,8 +21,10 @@
     body {
       background: #0a0c10;
       color: #eef2ff;
+      padding-bottom: 70px;
     }
 
+    /* Auth Screen */
     .auth-container {
       display: flex;
       justify-content: center;
@@ -38,8 +40,7 @@
       padding: 2.5rem;
       text-align: center;
       border: 1px solid #2a2e44;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
-      width: 380px;
+      width: 360px;
       max-width: 90%;
     }
 
@@ -49,11 +50,6 @@
       background: linear-gradient(135deg, #a0e9ff, #6b8cff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-    }
-
-    .auth-card p {
-      color: #9aa2bf;
-      margin-bottom: 2rem;
     }
 
     .google-btn {
@@ -67,132 +63,92 @@
       gap: 12px;
       cursor: pointer;
       color: white;
-      font-size: 1rem;
-      transition: 0.2s;
-      border: 1px solid #374151;
       width: 100%;
       justify-content: center;
     }
 
-    .google-btn:hover {
-      background: #2d3a4e;
-      transform: scale(1.02);
-    }
-
-    .error-box {
-      background: rgba(255, 107, 107, 0.1);
-      border: 1px solid #ff6b6b;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-top: 1rem;
-      text-align: left;
-    }
-
-    .error-box h4 {
-      color: #ff6b6b;
-      margin-bottom: 0.5rem;
-    }
-
-    .error-box p {
-      font-size: 0.8rem;
-      color: #ffb3b3;
-      margin-bottom: 0.5rem;
-    }
-
-    .error-box code {
-      background: #000;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-    }
-
+    /* Main App */
     .app-container {
       display: none;
-      max-width: 1300px;
+      max-width: 600px;
       margin: 0 auto;
+      background: #0a0c10;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      background: #0a0c10;
       padding: 1rem;
+      border-bottom: 1px solid #262b3c;
+      z-index: 100;
     }
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0e1019;
-      padding: 0.8rem 1.5rem;
-      border-radius: 2rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid #262b3c;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .logo {
-      font-weight: 800;
-      font-size: 1.7rem;
+    .header h1 {
+      font-size: 1.5rem;
       background: linear-gradient(130deg, #70e0ff, #9f7aff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .nav-actions {
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0e1019;
+      border-top: 1px solid #262b3c;
       display: flex;
-      gap: 1rem;
-      align-items: center;
+      justify-content: space-around;
+      padding: 0.8rem 1rem;
+      z-index: 100;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    .nav-icon {
+    .nav-item {
       background: none;
       border: none;
-      color: #cdd9ff;
-      font-size: 1.4rem;
+      color: #8e98b3;
+      font-size: 1.5rem;
       cursor: pointer;
-      padding: 8px;
       transition: 0.2s;
+      padding: 0.5rem;
     }
 
-    .nav-icon:hover {
+    .nav-item.active {
+      color: #3b49df;
+    }
+
+    .nav-item:hover {
       color: #6b8cff;
     }
 
-    .user-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #191d2b;
-      padding: 0.3rem 0.9rem;
-      border-radius: 60px;
-    }
-
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 1.8rem;
-    }
-
-    @media (max-width: 900px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .feed {
-      background: #0c0e16;
-      border-radius: 1.5rem;
+    /* Pages */
+    .page {
+      display: none;
       padding: 1rem;
+      animation: fadeIn 0.3s;
     }
 
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Create Post */
     .create-post {
       background: #11141f;
-      border-radius: 1.2rem;
+      border-radius: 1rem;
       padding: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       border: 1px solid #252b3b;
     }
 
@@ -204,7 +160,6 @@
       padding: 0.8rem;
       color: white;
       resize: vertical;
-      font-size: 0.9rem;
     }
 
     .btn-primary {
@@ -215,12 +170,14 @@
       color: white;
       font-weight: 500;
       cursor: pointer;
+      margin-top: 0.5rem;
     }
 
+    /* Post Card */
     .post-card {
       background: #11141f;
-      border-radius: 1.2rem;
-      margin-bottom: 1.2rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
       padding: 1rem;
       border: 1px solid #262c3c;
     }
@@ -230,6 +187,7 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 0.7rem;
+      cursor: pointer;
     }
 
     .post-user-img {
@@ -255,7 +213,7 @@
 
     .post-stats {
       display: flex;
-      gap: 1rem;
+      gap: 1.5rem;
       margin-top: 0.6rem;
       font-size: 0.85rem;
       color: #95a0c0;
@@ -263,104 +221,191 @@
 
     .post-stats i {
       cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .post-stats span {
+      cursor: pointer;
     }
 
     .liked {
       color: #ff4d6d;
     }
 
-    .reel-strip {
-      background: #0c0e16;
-      border-radius: 1.5rem;
-      padding: 1rem;
-      margin-top: 1rem;
+    /* Profile Page */
+    .profile-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
 
-    .reel-card {
-      background: #181e2c;
-      border-radius: 1.2rem;
-      margin-bottom: 0.8rem;
-      padding: 0.8rem;
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #3b49df;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .profile-bio {
+      color: #8e98b3;
+      margin-top: 0.5rem;
+    }
+
+    .profile-stats {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      justify-content: space-around;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #11141f;
+      border-radius: 1rem;
+    }
+
+    .stat {
+      text-align: center;
       cursor: pointer;
     }
 
-    .reel-card:hover {
-      background: #1f2538;
-    }
-
-    .reel-icon {
-      font-size: 2rem;
-      color: #ff4d6d;
-    }
-
-    .chat-panel {
-      background: #0c0e16;
-      border-radius: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      height: 75vh;
-      overflow: hidden;
-      position: sticky;
-      top: 1rem;
-    }
-
-    .chat-header {
-      padding: 1rem;
-      border-bottom: 1px solid #262b3b;
+    .stat-number {
+      font-size: 1.2rem;
       font-weight: bold;
     }
 
-    .users-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
+    .stat-label {
+      font-size: 0.7rem;
+      color: #8e98b3;
     }
 
-    .chat-user-item {
+    .edit-profile-btn {
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 8px;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    .profile-tabs {
+      display: flex;
+      border-bottom: 1px solid #262b3c;
+      margin: 1rem 0;
+    }
+
+    .profile-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      color: #8e98b3;
+    }
+
+    .profile-tab.active {
+      color: #3b49df;
+      border-bottom: 2px solid #3b49df;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .profile-grid-item {
+      aspect-ratio: 1;
+      background: #11141f;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 1rem;
+      justify-content: center;
       cursor: pointer;
     }
 
-    .chat-user-item:hover {
-      background: #1a1f2e;
+    /* Chat Page */
+    .chat-list {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
     }
 
-    .messages-area {
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem;
+      border-bottom: 1px solid #262b3c;
+      cursor: pointer;
+    }
+
+    .chat-item:hover {
+      background: #11141f;
+    }
+
+    .chat-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-name {
+      font-weight: bold;
+    }
+
+    .chat-last-msg {
+      font-size: 0.8rem;
+      color: #8e98b3;
+    }
+
+    /* Chat Conversation */
+    .chat-conversation {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+    }
+
+    .chat-messages {
       flex: 1;
       overflow-y: auto;
       padding: 1rem;
+    }
+
+    .message {
+      margin-bottom: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+    }
+
+    .message.my-message {
+      align-items: flex-end;
     }
 
     .message-bubble {
-      max-width: 75%;
+      max-width: 70%;
       padding: 8px 12px;
       border-radius: 18px;
       background: #1f2538;
     }
 
-    .my-message {
-      align-self: flex-end;
+    .my-message .message-bubble {
       background: #2b3b6e;
     }
 
-    .chat-input-row {
+    .chat-input-area {
       display: flex;
       gap: 8px;
-      padding: 0.8rem;
-      border-top: 1px solid #262b3b;
+      padding: 1rem;
+      border-top: 1px solid #262b3c;
     }
 
-    .chat-input-row input {
+    .chat-input-area input {
       flex: 1;
       background: #191e2c;
       border: none;
@@ -369,19 +414,7 @@
       color: white;
     }
 
-    .chat-input-row button, .chat-input-row label {
-      background: #2b2f44;
-      border: none;
-      color: white;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -397,9 +430,9 @@
 
     .modal-content {
       background: #121624;
-      border-radius: 1.5rem;
+      border-radius: 1rem;
       width: 90%;
-      max-width: 450px;
+      max-width: 400px;
       padding: 1.5rem;
     }
 
@@ -422,19 +455,17 @@
     .user-result {
       display: flex;
       justify-content: space-between;
-      margin: 12px 0;
       align-items: center;
-      padding: 8px;
-      border-radius: 12px;
-      background: #1a1e2c;
+      padding: 10px;
+      border-bottom: 1px solid #262b3c;
     }
 
-    .follow-toggle {
+    .follow-btn {
       background: #3b49df;
       border: none;
-      color: white;
-      border-radius: 30px;
       padding: 5px 15px;
+      border-radius: 20px;
+      color: white;
       cursor: pointer;
     }
 
@@ -443,10 +474,36 @@
       padding: 2rem;
       color: #8e98b3;
     }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .reel-card {
+      background: #181e2c;
+      border-radius: 1rem;
+      margin-bottom: 0.8rem;
+      padding: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .reel-icon {
+      font-size: 2rem;
+      color: #ff4d6d;
+    }
   </style>
 </head>
 <body>
 
+<!-- Auth Screen -->
 <div id="authScreen" class="auth-container">
   <div class="auth-card">
     <h1>⚡ HackerNet</h1>
@@ -454,74 +511,95 @@
     <button id="googleSignInBtn" class="google-btn">
       <i class="fab fa-google"></i> Continue with Google
     </button>
-    <div id="errorContainer"></div>
   </div>
 </div>
 
+<!-- Main App -->
 <div id="mainApp" class="app-container">
-  <div class="navbar">
-    <div class="logo">🔐 HackerNet</div>
-    <div class="nav-actions">
-      <button id="searchBtn" class="nav-icon"><i class="fas fa-search"></i></button>
-      <button id="reelsBtnHeader" class="nav-icon"><i class="fas fa-film"></i></button>
-      <div id="userInfo" class="user-badge">
-        <img id="userAvatar" class="avatar" src="">
-        <span id="userName"></span>
-      </div>
-      <button id="logoutBtn" class="nav-icon"><i class="fas fa-sign-out-alt"></i></button>
+  <!-- Header -->
+  <div class="header">
+    <h1 id="pageTitle">HackerNet</h1>
+  </div>
+
+  <!-- Home Page (Feed) -->
+  <div id="homePage" class="page active">
+    <div class="create-post">
+      <textarea id="postContent" rows="2" placeholder="Share an engineering insight..."></textarea>
+      <button id="createPostBtn" class="btn-primary"><i class="fas fa-paper-plane"></i> Post</button>
+    </div>
+    <div id="postsContainer">
+      <div class="loading">Loading feed...</div>
     </div>
   </div>
 
-  <div class="main-grid">
-    <div>
-      <div class="feed">
-        <div class="create-post">
-          <textarea id="postContent" rows="2" placeholder="Share an engineering insight..."></textarea>
-          <div class="post-actions">
-            <button id="createPostBtn" class="btn-primary"><i class="fas fa-paper-plane"></i> Post</button>
-          </div>
-        </div>
-        <div id="postsContainer">
-          <div class="loading">Loading feed...</div>
-        </div>
-      </div>
-      
-      <div class="reel-strip">
-        <h4 style="margin-bottom: 12px;"><i class="fas fa-clapperboard"></i> Trending Reels</h4>
-        <div id="reelsList">
-          <div class="loading">Loading reels...</div>
-        </div>
-      </div>
-    </div>
+  <!-- Search Page -->
+  <div id="searchPage" class="page">
+    <input type="text" id="searchUsersInput" class="search-input" placeholder="Search engineers...">
+    <div id="searchResults"></div>
+  </div>
 
-    <div class="chat-panel">
-      <div class="chat-header"><i class="fas fa-comment-dots"></i> Private Chat</div>
-      <div id="chatUsersList" class="users-list">
-        <div class="loading">Loading users...</div>
-      </div>
-      <div id="chatConversation" style="display: none; flex-direction: column; height: 100%;">
-        <div id="chatMessagesArea" class="messages-area"></div>
-        <div class="chat-input-row">
-          <input type="text" id="chatMessageInput" placeholder="Type a message...">
-          <label for="chatImageUpload" style="cursor:pointer;"><i class="fas fa-image"></i></label>
-          <input type="file" id="chatImageUpload" accept="image/*" style="display:none">
-          <button id="sendChatMsgBtn"><i class="fas fa-paper-plane"></i></button>
-        </div>
+  <!-- Reels Page -->
+  <div id="reelsPage" class="page">
+    <div id="reelsList">
+      <div class="loading">Loading reels...</div>
+    </div>
+  </div>
+
+  <!-- Profile Page -->
+  <div id="profilePage" class="page">
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- Chat Page -->
+  <div id="chatPage" class="page">
+    <div id="chatList" class="chat-list">
+      <div class="loading">Loading chats...</div>
+    </div>
+  </div>
+
+  <!-- Chat Conversation View -->
+  <div id="chatConversationView" style="display: none;">
+    <button id="backToChats" class="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+    <div class="chat-conversation">
+      <div id="conversationMessages" class="chat-messages"></div>
+      <div class="chat-input-area">
+        <input type="text" id="chatMessageInput" placeholder="Type a message...">
+        <label for="chatImageUpload" style="cursor:pointer;"><i class="fas fa-image"></i></label>
+        <input type="file" id="chatImageUpload" accept="image/*" style="display:none">
+        <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <button class="nav-item active" data-page="home"><i class="fas fa-home"></i></button>
+    <button class="nav-item" data-page="search"><i class="fas fa-search"></i></button>
+    <button class="nav-item" data-page="reels"><i class="fas fa-film"></i></button>
+    <button class="nav-item" data-page="profile"><i class="fas fa-user"></i></button>
+    <button class="nav-item" data-page="chat"><i class="fas fa-comment"></i></button>
   </div>
 </div>
 
-<div id="searchModal" class="modal">
+<!-- Modals -->
+<div id="followersModal" class="modal">
   <div class="modal-content">
-    <span class="close-modal" id="closeSearchModal">&times;</span>
-    <h3>🔍 Find Engineers</h3>
-    <input type="text" id="searchUserInput" class="search-input" placeholder="Search by name or email">
-    <div id="searchResultsList"></div>
+    <span class="close-modal" onclick="closeModal('followersModal')">&times;</span>
+    <h3>Followers</h3>
+    <div id="followersList"></div>
+  </div>
+</div>
+
+<div id="followingModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal('followingModal')">&times;</span>
+    <h3>Following</h3>
+    <div id="followingList"></div>
   </div>
 </div>
 
 <script>
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyBF1c8eotfssxA6weC9B9hD_pOrpm4jQIQ",
     authDomain: "hex-chat-faaa5.firebaseapp.com",
@@ -531,18 +609,35 @@
     messagingSenderId: "900244800752",
     appId: "1:900244800752:web:31662e1d280b98a5f0ee35"
   };
-  
-  // Initialize Firebase
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
 
   let currentUser = null;
-  let selectedChatUserId = null;
+  let currentChatUser = null;
   let chatListener = null;
   let followingMap = new Set();
 
-  // Helper functions
+  // Navigation
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.onclick = () => {
+      const page = btn.dataset.page;
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(`${page}Page`).classList.add('active');
+      
+      const titles = { home: 'HackerNet', search: 'Search', reels: 'Reels', profile: 'Profile', chat: 'Messages' };
+      document.getElementById('pageTitle').innerText = titles[page];
+      
+      if (page === 'profile') loadProfile(currentUser.uid);
+      if (page === 'chat') loadChatList();
+      if (page === 'search') loadSearchResults('');
+    };
+  });
+
+  // Helper Functions
   function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -566,16 +661,16 @@
     });
   }
 
-  // Follow system
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  // Follow System
   async function loadFollowStatus() {
     if (!currentUser) return;
-    try {
-      const snap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
-      const following = snap.val() || {};
-      followingMap = new Set(Object.keys(following));
-    } catch (err) {
-      console.error("Error loading follows:", err);
-    }
+    const snap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
+    const following = snap.val() || {};
+    followingMap = new Set(Object.keys(following));
   }
 
   async function followUser(uid) {
@@ -593,7 +688,7 @@
     loadPosts();
   }
 
-  // Load posts
+  // Load Posts
   async function loadPosts() {
     await loadFollowStatus();
     const postsRef = db.ref('posts');
@@ -619,7 +714,7 @@
         const div = document.createElement('div');
         div.className = 'post-card';
         div.innerHTML = `
-          <div class="post-header">
+          <div class="post-header" onclick="viewProfile('${post.uid}')">
             <img class="post-user-img" src="${user.photoURL || 'https://ui-avatars.com/api/?background=555&color=fff&name=' + (user.name || 'U')}">
             <div>
               <div class="post-name">${escapeHtml(user.name || 'Engineer')}</div>
@@ -629,11 +724,13 @@
           <div class="post-text">${escapeHtml(post.text)}</div>
           <div class="post-stats">
             <span><i class="fas fa-heart ${isLiked ? 'liked' : ''}" data-postid="${post.id}"></i> ${likeCount}</span>
+            <span><i class="fas fa-comment"></i> 0</span>
           </div>
         `;
         
         const heart = div.querySelector('.fa-heart');
-        heart?.addEventListener('click', async () => {
+        heart?.addEventListener('click', async (e) => {
+          e.stopPropagation();
           const likeRef = db.ref(`posts/${post.id}/likes/${currentUser.uid}`);
           if (isLiked) await likeRef.remove();
           else await likeRef.set(true);
@@ -644,7 +741,6 @@
     });
   }
 
-  // Create post
   document.getElementById('createPostBtn').onclick = async () => {
     const text = document.getElementById('postContent').value.trim();
     if (!text) return alert("Write something!");
@@ -657,7 +753,7 @@
     document.getElementById('postContent').value = '';
   };
 
-  // Load reels
+  // Load Reels
   async function loadReels() {
     db.ref('reels').on('value', (snap) => {
       const reels = snap.val() || {};
@@ -668,7 +764,7 @@
         return;
       }
       container.innerHTML = list.map(r => `
-        <div class="reel-card">
+        <div class="reel-card" onclick="alert('📽️ Reel: ${escapeHtml(r.title)}')">
           <i class="fas fa-play-circle reel-icon"></i>
           <div><b>${escapeHtml(r.title)}</b><div style="font-size:12px">by ${escapeHtml(r.creator)}</div></div>
         </div>
@@ -676,65 +772,271 @@
     });
   }
 
-  // Load chat users
-  async function loadChatUsers() {
-    db.ref('users').on('value', (snap) => {
-      const users = snap.val() || {};
-      const container = document.getElementById('chatUsersList');
-      let html = '<div style="padding:8px; color:#8e98b3;">Click to chat</div>';
-      let count = 0;
-      for (let uid in users) {
-        if (uid === currentUser?.uid) continue;
-        count++;
-        const u = users[uid];
-        html += `
-          <div class="chat-user-item" data-uid="${uid}">
-            <img src="${u.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" height="40" style="border-radius:50%">
-            <div><b>${escapeHtml(u.name || u.email)}</b></div>
+  // Profile Page
+  window.viewProfile = async function(uid) {
+    const isOwnProfile = uid === currentUser.uid;
+    const userSnap = await db.ref(`users/${uid}`).once('value');
+    const user = userSnap.val();
+    if (!user) return;
+    
+    const followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
+    const followingSnap = await db.ref(`follows/${uid}/following`).once('value');
+    const followers = followersSnap.val() ? Object.keys(followersSnap.val()).length : 0;
+    const following = followingSnap.val() ? Object.keys(followingSnap.val()).length : 0;
+    
+    const postsSnap = await db.ref('posts').orderByChild('uid').equalTo(uid).once('value');
+    const postsCount = postsSnap.val() ? Object.keys(postsSnap.val()).length : 0;
+    
+    const isFollowing = followingMap.has(uid);
+    
+    const container = document.getElementById('profileContent');
+    container.innerHTML = `
+      <div class="profile-header">
+        <img class="profile-avatar" src="${user.photoURL || 'https://ui-avatars.com/api/?background=3b49df&color=fff&name=' + (user.name || 'U')}">
+        <div class="profile-name">${escapeHtml(user.name || 'Engineer')}</div>
+        <div class="profile-bio">${escapeHtml(user.bio || 'Network Engineer | Hacker | Builder')}</div>
+        ${!isOwnProfile ? `<button class="edit-profile-btn" id="followProfileBtn">${isFollowing ? 'Unfollow' : 'Follow'}</button>` : `<button class="edit-profile-btn" id="editProfileBtn"><i class="fas fa-edit"></i> Edit Profile</button>`}
+      </div>
+      <div class="profile-stats">
+        <div class="stat" onclick="showFollowers('${uid}')">
+          <div class="stat-number">${followers}</div>
+          <div class="stat-label">Followers</div>
+        </div>
+        <div class="stat" onclick="showFollowing('${uid}')">
+          <div class="stat-number">${following}</div>
+          <div class="stat-label">Following</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">${postsCount}</div>
+          <div class="stat-label">Posts</div>
+        </div>
+      </div>
+      <div class="profile-tabs">
+        <div class="profile-tab active" data-tab="posts">Posts</div>
+        <div class="profile-tab" data-tab="saved">Saved</div>
+      </div>
+      <div id="profilePostsGrid" class="profile-grid"></div>
+    `;
+    
+    if (!isOwnProfile) {
+      document.getElementById('followProfileBtn')?.addEventListener('click', async () => {
+        if (isFollowing) await unfollowUser(uid);
+        else await followUser(uid);
+        viewProfile(uid);
+      });
+    } else {
+      document.getElementById('editProfileBtn')?.addEventListener('click', () => editProfile());
+    }
+    
+    // Load user posts
+    const userPosts = [];
+    for (let [id, post] of Object.entries(postsSnap.val() || {})) {
+      userPosts.push({ id, ...post });
+    }
+    userPosts.sort((a,b) => b.timestamp - a.timestamp);
+    
+    const grid = document.getElementById('profilePostsGrid');
+    if (userPosts.length === 0) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No posts yet</div>';
+    } else {
+      grid.innerHTML = userPosts.map(post => `
+        <div class="profile-grid-item" onclick="alert('Post: ${escapeHtml(post.text)}')">
+          <i class="fas fa-code" style="font-size: 2rem; color: #3b49df;"></i>
+        </div>
+      `).join('');
+    }
+    
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.tab === 'saved') {
+          grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">Saved posts coming soon!</div>';
+        } else {
+          grid.innerHTML = userPosts.map(post => `
+            <div class="profile-grid-item" onclick="alert('Post: ${escapeHtml(post.text)}')">
+              <i class="fas fa-code" style="font-size: 2rem; color: #3b49df;"></i>
+            </div>
+          `).join('');
+        }
+      };
+    });
+    
+    document.querySelector('.nav-item[data-page="profile"]').click();
+  };
+  
+  async function loadProfile(uid) {
+    await viewProfile(uid);
+  }
+  
+  function editProfile() {
+    const newBio = prompt("Enter your bio:", currentUser.bio || "Network Engineer | Hacker | Builder");
+    if (newBio !== null) {
+      db.ref(`users/${currentUser.uid}/bio`).set(newBio);
+      alert("Profile updated!");
+      viewProfile(currentUser.uid);
+    }
+  }
+  
+  async function showFollowers(uid) {
+    const followersSnap = await db.ref(`follows/${uid}/followers`).once('value');
+    const followers = followersSnap.val() || {};
+    const container = document.getElementById('followersList');
+    container.innerHTML = '';
+    for (let followerId of Object.keys(followers)) {
+      const userSnap = await db.ref(`users/${followerId}`).once('value');
+      const user = userSnap.val();
+      if (user) {
+        container.innerHTML += `
+          <div class="user-result">
+            <div><img src="${user.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" style="border-radius:50%"> ${escapeHtml(user.name || user.email)}</div>
+            <button class="follow-btn" onclick="viewProfile('${followerId}'); closeModal('followersModal')">View</button>
           </div>
         `;
       }
-      if (count === 0) {
-        html = '<div class="empty-state">No other users yet. Share this app!</div>';
+    }
+    document.getElementById('followersModal').style.display = 'flex';
+  }
+  
+  async function showFollowing(uid) {
+    const followingSnap = await db.ref(`follows/${uid}/following`).once('value');
+    const following = followingSnap.val() || {};
+    const container = document.getElementById('followingList');
+    container.innerHTML = '';
+    for (let followingId of Object.keys(following)) {
+      const userSnap = await db.ref(`users/${followingId}`).once('value');
+      const user = userSnap.val();
+      if (user) {
+        container.innerHTML += `
+          <div class="user-result">
+            <div><img src="${user.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" style="border-radius:50%"> ${escapeHtml(user.name || user.email)}</div>
+            <button class="follow-btn" onclick="viewProfile('${followingId}'); closeModal('followingModal')">View</button>
+          </div>
+        `;
       }
-      container.innerHTML = html;
-      document.querySelectorAll('.chat-user-item').forEach(el => {
-        el.onclick = () => openChat(el.dataset.uid);
-      });
-    });
+    }
+    document.getElementById('followingModal').style.display = 'flex';
   }
 
-  // Open chat
-  function openChat(targetUid) {
-    if (chatListener) chatListener();
-    selectedChatUserId = targetUid;
-    document.getElementById('chatConversation').style.display = 'flex';
-    const chatId = getChatId(currentUser.uid, targetUid);
-    const msgsRef = db.ref(`chats/${chatId}/messages`);
-    const area = document.getElementById('chatMessagesArea');
+  // Search
+  async function loadSearchResults(query) {
+    if (!query) {
+      document.getElementById('searchResults').innerHTML = '<div class="empty-state">Search for engineers...</div>';
+      return;
+    }
+    const usersSnap = await db.ref('users').once('value');
+    const users = usersSnap.val() || {};
+    const results = Object.entries(users).filter(([uid, u]) => 
+      (u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query)) && uid !== currentUser?.uid
+    );
+    const container = document.getElementById('searchResults');
+    if (results.length === 0) {
+      container.innerHTML = '<div class="empty-state">No users found</div>';
+      return;
+    }
+    container.innerHTML = results.map(([uid, u]) => {
+      const isFollowing = followingMap.has(uid);
+      return `
+        <div class="user-result">
+          <div onclick="viewProfile('${uid}')" style="flex:1; display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <img src="${u.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" height="40" style="border-radius:50%">
+            <div><b>${escapeHtml(u.name || u.email)}</b><div style="font-size:11px">${escapeHtml(u.email)}</div></div>
+          </div>
+          <button class="follow-btn" data-uid="${uid}" data-following="${isFollowing}">${isFollowing ? 'Unfollow' : 'Follow'}</button>
+        </div>
+      `;
+    }).join('');
     
-    chatListener = msgsRef.on('value', (snap) => {
+    document.querySelectorAll('.follow-btn').forEach(btn => {
+      btn.onclick = async () => {
+        const uid = btn.dataset.uid;
+        const isFollowing = btn.dataset.following === 'true';
+        if (isFollowing) await unfollowUser(uid);
+        else await followUser(uid);
+        loadSearchResults(document.getElementById('searchUsersInput').value);
+      };
+    });
+  }
+  
+  document.getElementById('searchUsersInput').addEventListener('input', (e) => {
+    loadSearchResults(e.target.value);
+  });
+
+  // Chat System
+  async function loadChatList() {
+    const chatsRef = db.ref('chats');
+    chatsRef.on('value', async (snap) => {
+      const chats = snap.val() || {};
+      const userChats = [];
+      for (let chatId in chats) {
+        if (chatId.includes(currentUser.uid)) {
+          const otherId = chatId.replace(currentUser.uid, '').replace('_', '');
+          if (otherId) {
+            const userSnap = await db.ref(`users/${otherId}`).once('value');
+            const lastMsgSnap = await db.ref(`chats/${chatId}/messages`).limitToLast(1).once('value');
+            const lastMsg = lastMsgSnap.val() ? Object.values(lastMsgSnap.val())[0] : null;
+            userChats.push({ uid: otherId, user: userSnap.val(), lastMsg: lastMsg?.text || 'No messages' });
+          }
+        }
+      }
+      const container = document.getElementById('chatList');
+      if (userChats.length === 0) {
+        container.innerHTML = '<div class="empty-state">No chats yet. Start a conversation!</div>';
+        return;
+      }
+      container.innerHTML = userChats.map(chat => `
+        <div class="chat-item" onclick="openChat('${chat.uid}')">
+          <img class="chat-avatar" src="${chat.user?.photoURL || 'https://ui-avatars.com/api/?background=555'}">
+          <div class="chat-info">
+            <div class="chat-name">${escapeHtml(chat.user?.name || chat.user?.email)}</div>
+            <div class="chat-last-msg">${escapeHtml(chat.lastMsg)}</div>
+          </div>
+        </div>
+      `).join('');
+    });
+  }
+  
+  window.openChat = async function(uid) {
+    currentChatUser = uid;
+    const userSnap = await db.ref(`users/${uid}`).once('value');
+    const user = userSnap.val();
+    document.getElementById('pageTitle').innerText = `Chat with ${user?.name || 'User'}`;
+    document.getElementById('chatPage').classList.remove('active');
+    document.getElementById('chatConversationView').style.display = 'flex';
+    
+    const chatId = getChatId(currentUser.uid, uid);
+    const messagesRef = db.ref(`chats/${chatId}/messages`);
+    const container = document.getElementById('conversationMessages');
+    
+    if (chatListener) chatListener();
+    chatListener = messagesRef.on('value', (snap) => {
       const msgs = snap.val() || {};
       const sorted = Object.values(msgs).sort((a,b) => a.timestamp - b.timestamp);
-      area.innerHTML = '';
+      container.innerHTML = '';
       sorted.forEach(msg => {
         const isMe = msg.sender === currentUser.uid;
         const div = document.createElement('div');
-        div.className = `message-bubble ${isMe ? 'my-message' : ''}`;
+        div.className = `message ${isMe ? 'my-message' : ''}`;
         if (msg.image) {
-          div.innerHTML = `<img src="${msg.image}" style="max-width:150px; border-radius:10px"><br>${msg.text || ''}`;
+          div.innerHTML = `<div class="message-bubble"><img src="${msg.image}" style="max-width:150px; border-radius:10px"><br>${msg.text || ''}</div>`;
         } else {
-          div.innerText = msg.text;
+          div.innerHTML = `<div class="message-bubble">${escapeHtml(msg.text)}</div>`;
         }
-        area.appendChild(div);
+        container.appendChild(div);
       });
-      area.scrollTop = area.scrollHeight;
+      container.scrollTop = container.scrollHeight;
     });
-  }
-
-  // Send message
-  document.getElementById('sendChatMsgBtn').onclick = async () => {
-    if (!selectedChatUserId) return alert("Select a user first");
+  };
+  
+  document.getElementById('backToChats').onclick = () => {
+    document.getElementById('chatConversationView').style.display = 'none';
+    document.getElementById('chatPage').classList.add('active');
+    document.getElementById('pageTitle').innerText = 'Messages';
+    if (chatListener) chatListener();
+  };
+  
+  document.getElementById('sendMessageBtn').onclick = async () => {
+    if (!currentChatUser) return;
     const input = document.getElementById('chatMessageInput');
     const text = input.value.trim();
     const file = document.getElementById('chatImageUpload').files[0];
@@ -744,7 +1046,7 @@
       document.getElementById('chatImageUpload').value = '';
     }
     if (!text && !image) return;
-    const chatId = getChatId(currentUser.uid, selectedChatUserId);
+    const chatId = getChatId(currentUser.uid, currentChatUser);
     await db.ref(`chats/${chatId}/messages`).push({
       sender: currentUser.uid,
       text: text || "",
@@ -754,96 +1056,32 @@
     input.value = '';
   };
 
-  // Search users
-  const searchModal = document.getElementById('searchModal');
-  document.getElementById('searchBtn').onclick = () => searchModal.style.display = 'flex';
-  document.getElementById('closeSearchModal').onclick = () => searchModal.style.display = 'none';
-  window.onclick = (e) => { if (e.target === searchModal) searchModal.style.display = 'none'; };
-  
-  document.getElementById('searchUserInput').addEventListener('input', async (e) => {
-    const query = e.target.value.toLowerCase();
-    const usersSnap = await db.ref('users').once('value');
-    const users = usersSnap.val() || {};
-    const results = Object.entries(users).filter(([uid, u]) => 
-      (u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query)) && uid !== currentUser?.uid
-    );
-    const container = document.getElementById('searchResultsList');
-    if (results.length === 0) {
-      container.innerHTML = '<div class="empty-state">No users found</div>';
-      return;
-    }
-    container.innerHTML = results.map(([uid, u]) => {
-      const isFollowing = followingMap.has(uid);
-      return `
-        <div class="user-result">
-          <div><img src="${u.photoURL || 'https://ui-avatars.com/api/?background=555'}" width="40" height="40" style="border-radius:50%"> ${escapeHtml(u.name || u.email)}</div>
-          <button class="follow-toggle" data-uid="${uid}" data-following="${isFollowing}">${isFollowing ? 'Unfollow' : 'Follow'}</button>
-        </div>
-      `;
-    }).join('');
-    document.querySelectorAll('.follow-toggle').forEach(btn => {
-      btn.onclick = async () => {
-        const uid = btn.dataset.uid;
-        const isFollowing = btn.dataset.following === 'true';
-        if (isFollowing) await unfollowUser(uid);
-        else await followUser(uid);
-        searchModal.style.display = 'none';
-      };
-    });
-  });
-
-  // Display error with instructions
-  function showAuthError(error) {
-    const errorContainer = document.getElementById('errorContainer');
-    errorContainer.innerHTML = `
-      <div class="error-box">
-        <h4>⚠️ Authentication Error</h4>
-        <p><strong>Error:</strong> ${error.message}</p>
-        <p><strong>Solution:</strong> Add your domain to Firebase authorized domains:</p>
-        <ol style="margin-left: 1rem; color: #ffb3b3;">
-          <li>Go to <a href="https://console.firebase.google.com/project/hex-chat-faaa5/authentication/settings" target="_blank" style="color: #6b8cff;">Firebase Console → Authentication → Settings</a></li>
-          <li>Under "Authorized domains", click <strong>Add domain</strong></li>
-          <li>Add: <code>${window.location.hostname || 'localhost'}</code></li>
-          <li>Also add: <code>127.0.0.1</code> and <code>localhost</code></li>
-          <li>Click Save and try again</li>
-        </ol>
-        <p style="margin-top: 0.5rem;">💡 <strong>Tip:</strong> If you're opening this file directly (file://), use a local server instead.</p>
-      </div>
-    `;
-  }
-
-  // Auth state
+  // Auth
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUser = user;
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
-      document.getElementById('userName').innerText = user.displayName?.split(' ')[0] || user.email?.split('@')[0];
-      document.getElementById('userAvatar').src = user.photoURL || `https://ui-avatars.com/api/?background=3b49df&color=fff&name=${user.displayName || 'User'}`;
       
-      try {
-        await db.ref('users/' + user.uid).set({
-          uid: user.uid,
-          name: user.displayName || 'Anonymous',
-          email: user.email,
-          photoURL: user.photoURL || '',
-          online: true,
-          lastSeen: Date.now()
-        });
-      } catch (err) {
-        console.error("Error saving user:", err);
-      }
+      await db.ref('users/' + user.uid).set({
+        uid: user.uid,
+        name: user.displayName || 'Anonymous',
+        email: user.email,
+        photoURL: user.photoURL || '',
+        bio: user.bio || 'Network Engineer | Hacker | Builder',
+        online: true
+      });
       
       loadPosts();
       loadReels();
-      loadChatUsers();
       
-      // Add demo reels if empty
       const reelsSnap = await db.ref('reels').once('value');
       if (!reelsSnap.exists()) {
-        await db.ref('reels').push({ title: "TCP/IP Deep Dive", creator: "netwizard", timestamp: Date.now() });
-        await db.ref('reels').push({ title: "Buffer Overflow", creator: "0xgray", timestamp: Date.now() });
-        await db.ref('reels').push({ title: "Wireless Hacking", creator: "wifihacker", timestamp: Date.now() });
+        await db.ref('reels').push({ title: "TCP/IP Deep Dive", creator: "netwizard" });
+        await db.ref('reels').push({ title: "Buffer Overflow Explained", creator: "0xgray" });
+        await db.ref('reels').push({ title: "Wireless Pentesting", creator: "wifihacker" });
+        await db.ref('reels').push({ title: "Kali Linux Tips", creator: "kaliking" });
+        await db.ref('reels').push({ title: "Network Security", creator: "secguru" });
       }
     } else {
       document.getElementById('authScreen').style.display = 'flex';
@@ -851,25 +1089,9 @@
     }
   });
 
-  // Google Sign In
   const provider = new firebase.auth.GoogleAuthProvider();
-  document.getElementById('googleSignInBtn').onclick = async () => {
-    try {
-      const result = await auth.signInWithPopup(provider);
-      console.log("Success:", result.user);
-    } catch (error) {
-      console.error("Auth error:", error);
-      if (error.code === 'auth/unauthorized-domain') {
-        showAuthError(error);
-      } else {
-        alert(`Error: ${error.message}`);
-      }
-    }
-  };
-  
-  document.getElementById('logoutBtn').onclick = () => auth.signOut();
-  document.getElementById('reelsBtnHeader').onclick = () => {
-    document.getElementById('reelsStrip').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('googleSignInBtn').onclick = () => {
+    auth.signInWithPopup(provider);
   };
 </script>
 </body>
