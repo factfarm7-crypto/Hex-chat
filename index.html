@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>HackerNet - Social for Engineers</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #0a0c10;
+      color: #eef2ff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1f2c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3b3f5c;
+      border-radius: 8px;
+    }
+
+    .app-container {
+      display: none;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #0f1117, #030507);
+    }
+    .auth-card {
+      background: #11131ecc;
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 2.5rem;
+      text-align: center;
+      border: 1px solid #2a2e44;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+      width: 360px;
+    }
+    .auth-card h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #a0e9ff, #6b8cff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .auth-card p {
+      color: #9aa2bf;
+      margin-bottom: 2rem;
+    }
+    .google-btn {
+      background: #1f2937;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 60px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      color: white;
+      font-size: 1rem;
+      transition: 0.2s;
+      border: 1px solid #374151;
+      width: 100%;
+      justify-content: center;
+    }
+    .google-btn:hover {
+      background: #2d3a4e;
+      transform: scale(1.02);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0e1019cc;
+      backdrop-filter: blur(12px);
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #262b3c;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.7rem;
+      background: linear-gradient(130deg, #70e0ff, #9f7aff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .nav-icon {
+      background: none;
+      border: none;
+      color: #cdd9ff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 8px;
+    }
+    .nav-icon:hover {
+      color: #6b8cff;
+      transform: scale(1.05);
+    }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #191d2b;
+      padding: 0.3rem 0.9rem;
+      border-radius: 60px;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.8rem;
+    }
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .feed {
+      background: #0c0e16;
+      border-radius: 1.5rem;
+      padding: 1rem;
+    }
+    .create-post {
+      background: #11141f;
+      border-radius: 1.2rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #252b3b;
+    }
+    .create-post textarea {
+      width: 100%;
+      background: #0a0d15;
+      border: 1px solid #2a2f41;
+      border-radius: 1rem;
+      padding: 0.8rem;
+      color: white;
+      resize: vertical;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .create-post textarea:focus {
+      outline: none;
+      border-color: #3b49df;
+    }
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.7rem;
+    }
+    .btn-primary {
+      background: #3b49df;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #4f5eef;
+      transform: translateY(-1px);
+    }
+    .post-card {
+      background: #11141f;
+      border-radius: 1.2rem;
+      margin-bottom: 1.2rem;
+      padding: 1rem;
+      border: 1px solid #262c3c;
+      transition: 0.2s;
+    }
+    .post-card:hover {
+      border-color: #3b49df;
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0.7rem;
+    }
+    .post-user-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .post-name {
+      font-weight: bold;
+    }
+    .post-handle {
+      font-size: 0.7rem;
+      color: #8e98b3;
+    }
+    .post-text {
+      margin: 0.5rem 0;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .post-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: #95a0c0;
+    }
+    .post-stats i {
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .post-stats i:hover {
+      transform: scale(1.1);
+    }
+    .reel-strip {
+      background: #0c0e16;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .reel-card {
+      background: #181e2c;
+      border-radius: 1.2rem;
+      margin-bottom: 0.8rem;
+      padding: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .reel-card:hover {
+      background: #1f2538;
+      transform: translateX(5px);
+    }
+    .reel-icon {
+      font-size: 2rem;
+      color: #ff4d6d;
+    }
+
+    .chat-panel {
+      background: #0c0e16;
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      height: 75vh;
+      overflow: hidden;
+      position: sticky;
+      top: 1rem;
+    }
+    .chat-header {
+      padding: 1rem;
+      border-bottom: 1px solid #262b3b;
+      font-weight: bold;
+      background: #0c0e16;
+    }
+    .users-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+    .chat-user-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .chat-user-item:hover {
+      background: #1a1f2e;
+    }
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #0f121c;
+    }
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .message-bubble {
+      max-width: 75%;
+      padding: 8px 12px;
+      border-radius: 18px;
+      background: #1f2538;
+      word-break: break-word;
+    }
+    .my-message {
+      align-self: flex-end;
+      background: #2b3b6e;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      padding: 0.8rem;
+      border-top: 1px solid #262b3b;
+      background: #0a0d16;
+    }
+    .chat-input-row input[type="text"] {
+      flex: 1;
+      background: #191e2c;
+      border: none;
+      border-radius: 2rem;
+      padding: 8px 14px;
+      color: white;
+      outline: none;
+    }
+    .chat-input-row input[type="text"]:focus {
+      background: #1f2538;
+    }
+    .chat-input-row button, .chat-input-row label {
+      background: #2b2f44;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .chat-input-row button:hover, .chat-input-row label:hover {
+      background: #3b49df;
+    }
+    .image-preview {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 5px;
+      font-size: 0.8rem;
+      color: #8e98b3;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #121624;
+      border-radius: 1.5rem;
+      width: 90%;
+      max-width: 450px;
+      padding: 1.5rem;
+    }
+    .close-modal {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #8e98b3;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 40px;
+      background: #202433;
+      border: none;
+      color: white;
+      margin: 1rem 0;
+      outline: none;
+    }
+    .user-result {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+      align-items: center;
+      padding: 8px;
+      border-radius: 12px;
+      background: #1a1e2c;
+    }
+    .follow-toggle {
+      background: #3b49df;
+      border: none;
+      color: white;
+      border-radius: 30px;
+      padding: 5px 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .follow-toggle:hover {
+      background: #4f5eef;
+    }
+    .liked {
+      color: #ff4d6d;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #8e98b3;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #8e98b3;
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-container">
+  <div class="auth-card">
+    <h1>⚡ HackerNet</h1>
+    <p>For network engineers, hackers & builders</p>
+    <div id="googleSignInBtn" class="google-btn">
+      <i class="fab fa-google"></i> Continue with Google
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="app-container">
+  <div class="navbar">
+    <div class="logo">🔐 HackerNet</div>
+    <div class="nav-actions">
+      <button id="searchBtn" class="nav-icon" title="Search Engineers"><i class="fas fa-search"></i></button>
+      <button id="reelsBtnHeader" class="nav-icon" title="Reels"><i class="fas fa-film"></i></button>
+      <div id="userInfo" class="user-badge">
+        <img id="userAvatar" class="avatar" src="" alt="avatar">
+        <span id="userName"></span>
+      </div>
+      <button id="logoutBtn" class="nav-icon" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT FEED -->
+    <div>
+      <div class="feed" id="feedSection">
+        <div class="create-post">
+          <textarea id="postContent" rows="2" placeholder="Share an engineering insight, exploit, or network tip..."></textarea>
+          <div class="post-actions">
+            <button id="createPostBtn" class="btn-primary"><i class="fas fa-paper-plane"></i> Post</button>
+          </div>
+        </div>
+        <div id="postsContainer">
+          <div class="loading">Loading feed...</div>
+        </div>
+      </div>
+      <!-- Reels section -->
+      <div class="reel-strip" id="reelsStrip">
+        <h4 style="margin-bottom: 12px;"><i class="fas fa-clapperboard"></i> Trending Reels</h4>
+        <div id="reelsList">
+          <div class="loading">Loading reels...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: PRIVATE CHAT -->
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-header"><i class="fas fa-comment-dots"></i> Private Chat & Media</div>
+      <div id="chatUsersList" class="users-list">
+        <div class="loading">Loading users...</div>
+      </div>
+      <div id="chatConversation" style="display: none; flex-direction: column; height: 100%;">
+        <div id="chatMessagesArea" class="messages-area"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatMessageInput" placeholder="Type a message...">
+          <label for="chatImageUpload" style="cursor:pointer;"><i class="fas fa-image"></i></label>
+          <input type="file" id="chatImageUpload" accept="image/*" style="display:none">
+          <button id="sendChatMsgBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div id="imagePreviewArea" class="image-preview"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div id="searchModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" id="closeSearchModal">&times;</span>
+    <h3>🔍 Find Engineers</h3>
+    <input type="text" id="searchUserInput" class="search-input" placeholder="Search by name or email">
+    <div id="searchResultsList"></div>
+  </div>
+</div>
+
+<script>
+  // Firebase configuration using the provided database URL
+  // Note: For auth to work, you need to enable Google Auth in Firebase Console
+  const firebaseConfig = {
+    apiKey: "https://hex-chat-faaa5-default-rtdb.asia-southeast1.firebasedatabase.app/", // Demo key - you'll need to replace with your actual Firebase web API key
+    authDomain: "hex-chat-faaa5.firebaseapp.com",
+    databaseURL: "https://hex-chat-faaa5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "hex-chat-faaa5",
+    storageBucket: "hex-chat-faaa5.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abc123def456"
+  };
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  let currentUser = null;
+  let selectedChatUserId = null;
+  let chatMessageListener = null;
+
+  // Helper functions
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+
+  function getChatId(uid1, uid2) {
+    return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+  }
+
+  // Auth state handler
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('userName').innerText = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'User';
+      document.getElementById('userAvatar').src = user.photoURL || `https://ui-avatars.com/api/?background=3b49df&color=fff&name=${user.displayName || 'User'}`;
+      
+      // Save user to database
+      const userRef = db.ref('users/' + user.uid);
+      await userRef.set({
+        uid: user.uid,
+        name: user.displayName || 'Anonymous',
+        email: user.email,
+        photoURL: user.photoURL || '',
+        online: true,
+        lastSeen: Date.now()
+      });
+      
+      // Load all data
+      loadPosts();
+      loadReels();
+      loadChatUsers();
+    } else {
+      document.getElementById('authScreen').style.display = 'flex';
+      document.getElementById('mainApp').style.display = 'none';
+      currentUser = null;
+    }
+  });
+
+  // Google Sign-In
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.addScope('profile');
+  provider.addScope('email');
+  
+  document.getElementById('googleSignInBtn').onclick = () => {
+    auth.signInWithPopup(provider).catch(err => {
+      console.error(err);
+      alert("Sign-in error: " + err.message);
+    });
+  };
+  
+  document.getElementById('logoutBtn').onclick = () => auth.signOut();
+
+  // Follow system
+  let followingMap = new Set();
+
+  async function loadFollowStatus() {
+    if (!currentUser) return;
+    try {
+      const followingSnap = await db.ref(`follows/${currentUser.uid}/following`).once('value');
+      const following = followingSnap.val() || {};
+      followingMap = new Set(Object.keys(following));
+    } catch (err) {
+      console.error("Error loading follow status:", err);
+    }
+  }
+
+  async function followUser(targetUid) {
+    if (targetUid === currentUser.uid) return;
+    await db.ref(`follows/${currentUser.uid}/following/${targetUid}`).set(true);
+    await db.ref(`follows/${targetUid}/followers/${currentUser.uid}`).set(true);
+    followingMap.add(targetUid);
+    loadPosts();
+  }
+
+  async function unfollowUser(targetUid) {
+    await db.ref(`follows/${currentUser.uid}/following/${targetUid}`).remove();
+    await db.ref(`follows/${targetUid}/followers/${currentUser.uid}`).remove();
+    followingMap.delete(targetUid);
+    loadPosts();
+  }
+
+  // Load posts
+  async function loadPosts() {
+    await loadFollowStatus();
+    const postsRef = db.ref('posts');
+    postsRef.on('value', async (snapshot) => {
+      const posts = snapshot.val() || {};
+      let postsArray = Object.entries(posts).map(([id, data]) => ({ id, ...data }));
+      
+      // Filter: show posts from followed users and own posts
+      postsArray = postsArray.filter(p => (followingMap.has(p.uid) || p.uid === currentUser?.uid));
+      postsArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      
+      const container = document.getElementById('postsContainer');
+      if (postsArray.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><br>No posts from followed engineers.<br>Search & follow people to see their posts!</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      for (let post of postsArray) {
+        try {
+          const userInfoSnap = await db.ref(`users/${post.uid}`).once('value');
+          const userData = userInfoSnap.val() || { name: 'Anonymous', photoURL: '', email: 'unknown' };
+          const likeCount = post.likes ? Object.keys(post.likes).length : 0;
+          const isLiked = post.likes && post.likes[currentUser.uid];
+          
+          const postDiv = document.createElement('div');
+          postDiv.className = 'post-card';
+          postDiv.innerHTML = `
+            <div class="post-header">
+              <img class="post-user-img" src="${userData.photoURL || 'https://ui-avatars.com/api/?background=555&color=fff&name=' + (userData.name || 'User')}" onerror="this.src='https://ui-avatars.com/api/?background=333&color=fff'">
+              <div>
+                <div class="post-name">${escapeHtml(userData.name || 'Engineer')}</div>
+                <div class="post-handle">@${escapeHtml((userData.email || '').split('@')[0] || 'hacker')}</div>
+              </div>
+            </div>
+            <div class="post-text">${escapeHtml(post.text)}</div>
+            <div class="post-stats">
+              <span><i class="fas fa-heart ${isLiked ? 'liked' : ''}" data-postid="${post.id}" style="cursor:pointer;"></i> <span class="like-count">${likeCount}</span></span>
+              <span><i class="fas fa-comment"></i> 0</span>
+            </div>
+          `;
+          
+          const likeIcon = postDiv.querySelector('.fa-heart');
+          likeIcon?.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const postId = likeIcon.dataset.postid;
+            const likeRef = db.ref(`posts/${postId}/likes/${currentUser.uid}`);
+            if (isLiked) {
+              await likeRef.remove();
+            } else {
+              await likeRef.set(true);
+            }
+          });
+          
+          container.appendChild(postDiv);
+        } catch (err) {
+          console.error("Error loading post:", err);
+        }
+      }
+    });
+  }
+
+  // Create new post
+  document.getElementById('createPostBtn').onclick = async () => {
+    const text = document.getElementById('postContent').value.trim();
+    if (!text) {
+      alert("Please write something before posting!");
+      return;
+    }
+    try {
+      const newPostRef = db.ref('posts').push();
+      await newPostRef.set({
+        uid: currentUser.uid,
+        text: text,
+        timestamp: Date.now(),
+        likes: {}
+      });
+      document.getElementById('postContent').value = '';
+    } catch (err) {
+      console.error("Error creating post:", err);
+      alert("Failed to create post: " + err.message);
+    }
+  };
+
+  // Load reels
+  async function loadReels() {
+    const reelsRef = db.ref('reels');
+    reelsRef.on('value', (snap) => {
+      const reels = snap.val() || {};
+      const reelsList = Object.values(reels).reverse();
+      const container = document.getElementById('reelsList');
+      
+      if (reelsList.length === 0) {
+        container.innerHTML = '<div class="empty-state">No reels yet. Be the first to create one!</div>';
+        addDemoReels();
+        return;
+      }
+      
+      container.innerHTML = reelsList.map((r, idx) => `
+        <div class="reel-card" data-reel="${idx}">
+          <i class="fas fa-play-circle reel-icon"></i>
+          <div>
+            <b>${escapeHtml(r.title)}</b>
+            <div style="font-size:12px; color:#8e98b3;">by ${escapeHtml(r.creator)}</div>
+          </div>
+        </div>
+      `).join('');
+      
+      document.querySelectorAll('.reel-card').forEach(el => {
+        el.addEventListener('click', () => {
+          alert(`📽️ Reel Preview\n\nTitle: ${el.querySelector('b')?.innerText}\nThis would play a video/short in a real implementation.`);
+        });
+      });
+    });
+  }
+  
+  async function addDemoReels() {
+    const demoReels = [
+      { title: "TCP/IP Deep Dive", creator: "netwizard", mediaUrl: "https://picsum.photos/id/0/300/200", timestamp: Date.now() },
+      { title: "Buffer Overflow Explained", creator: "0xgray", mediaUrl: "https://picsum.photos/id/1/300/200", timestamp: Date.now() },
+      { title: "Wireless Pentesting", creator: "wifihacker", mediaUrl: "https://picsum.photos/id/2/300/200", timestamp: Date.now() }
+    ];
+    
+    for (let reel of demoReels) {
+      const exists = await db.ref('reels').orderByChild('title').equalTo(reel.title).once('value');
+      if (!exists.exists()) {
+        await db.ref('reels').push(reel);
+      }
+    }
+  }
+
+  // Load chat users
+  async function loadChatUsers() {
+    const usersRef = db.ref('users');
+    usersRef.on('value', (snap) => {
+      const users = snap.val() || {};
+      const usersListDiv = document.getElementById('chatUsersList');
+      
+      let html = '<div style="padding: 8px; color:#8e98b3; font-size:0.8rem;"><i class="fas fa-users"></i> Click any user to chat</div>';
+      let hasUsers = false;
+      
+      for (let uid in users) {
+        if (uid === currentUser?.uid) continue;
+        hasUsers = true;
+        const u = users[uid];
+        html += `
+          <div class="chat-user-item" data-uid="${uid}">
+            <img src="${u.photoURL || 'https://ui-avatars.com/api/?background=555&color=fff&name=' + (u.name || 'User')}" width="40" height="40" style="border-radius:50%; object-fit:cover;">
+            <div>
+              <b>${escapeHtml(u.name || u.email)}</b>
+              <div style="font-size:11px; color:#8e98b3;">${escapeHtml(u.email)}</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (!hasUsers) {
+        html = '<div class="empty-state">No other users found. Share this app with friends!</div>';
+      }
+      
+      usersListDiv.innerHTML = html;
+      
+      document.querySelectorAll('.chat-user-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const targetUid = el.dataset.uid;
+          openChatWith(targetUid);
+        });
+      });
+    });
+  }
+
+  // Open private chat
+  function openChatWith(targetUid) {
+    if (chatMessageListener) {
+      chatMessageListener();
+    }
+    
+    selectedChatUserId = targetUid;
+    const chatConversation = document.getElementById('chatConversation');
+    chatConversation.style.display = 'flex';
+    
+    const chatId = getChatId(currentUser.uid, targetUid);
+    const messagesRef = db.ref(`chats/${chatId}/messages`);
+    const messagesArea = document.getElementById('chatMessagesArea');
+    messagesArea.innerHTML = '<div class="loading">Loading messages...</div>';
+    
+    chatMessageListener = messagesRef.on('value', (snap) => {
+      const msgs = snap.val() || {};
+      const sorted = Object.values(msgs).sort((a, b) => a.timestamp - b.timestamp);
+      messagesArea.innerHTML = '';
+      
+      if (sorted.length === 0) {
+        messagesArea.innerHTML = '<div class="empty-state">No messages yet. Start the conversation!</div>';
+      }
+      
+      sorted.forEach(msg => {
+        const isMe = msg.sender === currentUser.uid;
+        const div = document.createElement('div');
+        div.className = `message-bubble ${isMe ? 'my-message' : ''}`;
+        
+        if (msg.image) {
+          div.innerHTML = `<img src="${msg.image}" style="max-width:200px; border-radius:12px; max-height:150px; cursor:pointer;" onclick="window.open('${msg.image}','_blank')"><br>${msg.text ? escapeHtml(msg.text) : ''}`;
+        } else {
+          div.innerText = msg.text;
+        }
+        
+        messagesArea.appendChild(div);
+      });
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    });
+    
+    // Update chat header
+    db.ref(`users/${targetUid}`).once('value').then(snap => {
+      if (snap.exists()) {
+        const userName = snap.val().name || snap.val().email || 'Engineer';
+        document.querySelector('.chat-header').innerHTML = `<i class="fas fa-comment-dots"></i> Chat with ${escapeHtml(userName)}`;
+      }
+    });
+  }
+
+  // Send message
+  document.getElementById('sendChatMsgBtn').onclick = async () => {
+    if (!selectedChatUserId) {
+      alert("Please select a user to chat with first!");
+      return;
+    }
+    
+    const input = document.getElementById('chatMessageInput');
+    const text = input.value.trim();
+    const fileInput = document.getElementById('chatImageUpload');
+    let imageBase64 = null;
+    
+    if (fileInput.files.length > 0) {
+      imageBase64 = await fileToBase64(fileInput.files[0]);
+      fileInput.value = '';
+      document.getElementById('imagePreviewArea').innerHTML = '';
+    }
+    
+    if (!text && !imageBase64) return;
+    
+    const chatId = getChatId(currentUser.uid, selectedChatUserId);
+    const msgRef = db.ref(`chats/${chatId}/messages`).push();
+    await msgRef.set({
+      sender: currentUser.uid,
+      text: text || "",
+      image: imageBase64 || null,
+      timestamp: Date.now()
+    });
+    
+    input.value = '';
+  };
+  
+  // Image preview
+  document.getElementById('chatImageUpload').onchange = (e) => {
+    if (e.target.files[0]) {
+      const previewDiv = document.getElementById('imagePreviewArea');
+      previewDiv.innerHTML = `<span><i class="fas fa-image"></i> Image ready to send ✓</span>`;
+      setTimeout(() => {
+        if (previewDiv.innerHTML.includes('ready')) {
+          setTimeout(() => { previewDiv.innerHTML = ''; }, 2000);
+        }
+      }, 2000);
+    }
+  };
+
+  // Search modal functionality
+  const searchModal = document.getElementById('searchModal');
+  document.getElementById('searchBtn').onclick = () => {
+    searchModal.style.display = 'flex';
+    document.getElementById('searchUserInput').value = '';
+    document.getElementById('searchResultsList').innerHTML = '';
+  };
+  document.getElementById('closeSearchModal').onclick = () => searchModal.style.display = 'none';
+  window.onclick = (e) => { if (e.target === searchModal) searchModal.style.display = 'none'; };
+  
+  document.getElementById('searchUserInput').addEventListener('input', async (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    if (!query) {
+      document.getElementById('searchResultsList').innerHTML = '';
+      return;
+    }
+    
+    const usersSnap = await db.ref('users').once('value');
+    const users = usersSnap.val() || {};
+    const results = Object.entries(users).filter(([uid, u]) => {
+      return (u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query)) && uid !== currentUser?.uid;
+    });
+    
+    const container = document.getElementById('searchResultsList');
+    if (results.length === 0) {
+      container.innerHTML = '<div class="empty-state">No users found</div>';
+      return;
+    }
+    
+    container.innerHTML = results.map(([uid, u]) => {
+      const isFollowing = followingMap.has(uid);
+      return `
+        <div class="user-result">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <img src="${u.photoURL || 'https://ui-avatars.com/api/?background=555&color=fff'}" width="40" height="40" style="border-radius:50%; object-fit:cover;">
+            <div>
+              <div><b>${escapeHtml(u.name || u.email)}</b></div>
+              <div style="font-size:11px; color:#8e98b3;">${escapeHtml(u.email)}</div>
+            </div>
+          </div>
+          <button class="follow-toggle" data-uid="${uid}" data-following="${isFollowing}">${isFollowing ? 'Unfollow' : 'Follow'}</button>
+        </div>
+      `;
+    }).join('');
+    
+    document.querySelectorAll('.follow-toggle').forEach(btn => {
+      btn.addEventListener('click', async (ev) => {
+        const targetUid = btn.dataset.uid;
+        const currently = btn.dataset.following === 'true';
+        if (currently) {
+          await unfollowUser(targetUid);
+        } else {
+          await followUser(targetUid);
+        }
+        searchModal.style.display = 'none';
+        loadPosts();
+      });
+    });
+  });
+
+  document.getElementById('reelsBtnHeader').onclick = () => {
+    document.getElementById('reelsStrip').scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Initialize demo reels if needed
+  setTimeout(() => {
+    db.ref('reels').once('value', snap => {
+      if (!snap.exists()) addDemoReels();
+    });
+  }, 1000);
+</script>
+</body>
+</html>
